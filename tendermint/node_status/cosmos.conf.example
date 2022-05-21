@@ -4,6 +4,9 @@ MONIKER="cyberomanov"
 # valoper
 VALIDATOR_ADDRESS="pylovaloper1upvcsamhmf8r3c8sdhcftk3mz2jxvfm86pzj4y"
 
+# project name for log
+PROJECT="pylons-testnet"
+
 # token name
 TOKEN="bedrock"
 
