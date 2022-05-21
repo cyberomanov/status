@@ -18,8 +18,10 @@ function __getLastChainBlockFunc() {
 
 function nodeStatusFunc() {
 
-   MESSAGE="<b>${CHAIN}</b>\n\n"
-   echo -e "${CHAIN}\n"
+   MESSAGE="<b>${CHAIN}</b>\n"
+   MESSAGE="<b>${MONIKER}</b>\n\n"
+   echo -e "${CHAIN}"
+   echo -e "${MONIKER}\n"
 
    # if 'SEND' become '1' > alarm will be sent
    SEND=0
