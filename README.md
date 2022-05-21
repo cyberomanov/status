@@ -7,7 +7,7 @@ Instruction:
 
 3. Create at least 2 channels: `alarm` and `log`. Customize them and `get chats IDs`.
 4. Connect to your server and create `status` folder in the `$HOME directory`.
-5. In this folder you have to create `main.sh` file with `nano $HOME/status/main.sh`, which can be find in `status_ex` folder. You don't have to edit this file, it's ready to use.
+5. In this folder you have to create `main.sh` file with `nano $HOME/status/main.sh`. You don't have to edit this file, it's ready to use.
 
 ```
 #!/bin/bash
