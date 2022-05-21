@@ -5,15 +5,15 @@ Instruction:
 
 1. Google `how to create telegram bot via @FatherBot`. Customize your bot (avatar, description and etc.) and `get bot API token`.
 2. Create at least 2 channels: `alarm` and `log`. Customize them and `get chats IDs`.
-3. Connect to your server and create `status` folder in the `$HOME directory`.
-4. In this folder you have to create `main.sh` file with `nano $HOME/status/main.sh`. You don't have to edit this file, it's ready to use.
-> You can find `main.sh` in this repository.
-5. Also you have to create as many `cosmos.conf` files with `nano $HOME/status/pylons.conf`, as many nodes you have on the current server. Customize your config files.
+3. Connect to your server and create `status` folder in the `$HOME directory` with `mkdir $HOME/status/`.
+4. In this folder you have to create `cosmos.sh` file with `nano $HOME/status/cosmos.sh`. You don't have to do any edits on `cosmos.sh` file, it's ready to use.
+> You can find `cosmos.sh` in this repository.
+5. Also you have to create as many `cosmos.conf` files with `nano $HOME/status/cosmos.conf`, as many nodes you have on the current server. Customize your config files.
 > You can find `cosmos.conf.example` and `curl.example` in this repository.
-6. Run `bash main.sh` to check your settings. Normal output:
+6. Run `bash cosmos.sh` to check your settings. Normal output:
 
 ```
-root@v1131623:~/status# bash main.sh 
+root@v1131623:~/status# bash cosmos.sh 
  
 /// 2022-05-21 14:16:44 ///
  
@@ -35,7 +35,7 @@ root@v1131623:~/status#
 
 7. Create `slash.sh` with `nano $HOME/status/slash.sh`. This bash script will divide group of messages.
 > You can find `slash.sh.example` in this repository.
-8. Add some rules with `chmod u+x main.sh slash.sh`.
+8. Add some rules with `chmod u+x cosmos.sh slash.sh`.
 9. Edit crontab with `crontab -e`.
 > You can find `crontab.example` in this repository.
-10. Check you logs with `cat $HOME/status/main.log` or `tail $HOME/status/main.log -f`.
+10. Check you logs with `cat $HOME/status/cosmos.log` or `tail $HOME/status/cosmos.log -f`.
