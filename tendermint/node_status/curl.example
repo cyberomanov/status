@@ -10,8 +10,8 @@ CURL="https://api-omniflix.cosmostation.io/v1/status"
 # provenance-m
 CURL="https://api-provenance.cosmostation.io/v1/status"
 
-# galaxy-m
-CURL="https://galaxy.postcapitalist.io/bank/total/uglx"
+# galaxy-t
+CURL="https://galaxy.postcapitalist.io/blocks/latest"
 
 # meme-m
 CURL="https://api-meme-1.meme.sx/bank/total/umeme"

@@ -7,6 +7,8 @@ function __getLastChainBlockFunc() {
         LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".block_height" | tr -d '"')
     elif [[ $CURL == *"guru"* ]]; then
         LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".[].height" | tr -d '"')
+    elif [[ $CURL == *"postcapitalist"* ]]; then
+                LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".block.header.height" | tr -d '"')
     else
         LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".height" | tr -d '"')
     fi
