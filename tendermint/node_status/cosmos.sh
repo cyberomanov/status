@@ -127,18 +127,22 @@ cd $HOME/status/
 for CONFIG in *.conf
 do
 
-    # read the config
-    . $CONFIG
+    # if config at least contains 'COSMOS' string, then go
+    if [[ $(cat $CONFIG) == *"COSMOS"* ]]
+    then
 
-    # get '--node' and '--chain' value
-    NODE=$(cat ${CONFIG}/config.toml | grep -oPm1 "(?<=^laddr = \")([^%]+)(?=\")")
-    CHAIN=$(cat ${CONFIG}/genesis.json | jq .chain_id | sed -E 's/.*"([^"]+)".*/\1/')
+        # read the config
+        . $CONFIG
+        # get '--node' and '--chain' value
+        NODE=$(cat ${CONFIG}/config.toml | grep -oPm1 "(?<=^laddr = \")([^%]+)(?=\")")
+        CHAIN=$(cat ${CONFIG}/genesis.json | jq .chain_id | sed -E 's/.*"([^"]+)".*/\1/')
 
-    # print the current time
-    echo -e " "
-    echo -e "/// $(date '+%F %T') ///"
-    echo -e " "
+        # print the current time
+        echo -e " "
+        echo -e "/// $(date '+%F %T') ///"
+        echo -e " "
 
-    # run main func
-    nodeStatusFunc
+        # run main func
+        nodeStatusFunc
+    fi
 done
