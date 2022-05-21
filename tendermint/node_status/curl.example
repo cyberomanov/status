@@ -10,7 +10,7 @@ CURL="https://api-omniflix.cosmostation.io/v1/status"
 # provenance-m
 CURL="https://api-provenance.cosmostation.io/v1/status"
 
-# galaxy-t
+# galaxy-m
 CURL="https://galaxy.postcapitalist.io/blocks/latest"
 
 # meme-m
