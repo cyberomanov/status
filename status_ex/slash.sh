@@ -1,7 +1,10 @@
 #!/bin/bash
 
-BOT_TOKEN="228322:xxx-xxx_xxx"
+# chat for log messages, not alarm
 CHAT_ID_LOG="-1703"
+
+# bot token
+BOT_TOKEN="228322:xxx-xxx_xxx"
 
 MESSAGE="<code>/// $(date '+%F %T') ///</code>"
 
