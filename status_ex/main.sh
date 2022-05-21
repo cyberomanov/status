@@ -78,7 +78,7 @@ function nodeStatusFunc() {
            # get local explorer snapshot and request some info about our validator
            EXPLORER=$(${COSMOS} q staking validators --node $NODE -o json --limit=1000)
            VALIDATORS_COUNT=$(echo ${EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '.tokens' | sort -gr | wc -l)
-           VALIDATOR_STRING=$(echo ${EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep ${MONIKER})
+           VALIDATOR_STRING=$(echo ${EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep -F ${MONIKER})
            VALIDATOR_PLACE=$(echo ${VALIDATOR_STRING} | awk '{print $1}')
            MAX_VALIDATOR_COUNT=$(${COSMOS} q staking params --node ${NODE} -o json | jq ."max_validators")
 
