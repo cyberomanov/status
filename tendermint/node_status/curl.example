@@ -28,5 +28,5 @@ CURL="https://dws.api.explorers.guru/api/blocks?count=1"
 # quicksilver-t
 CURL="https://quicksilver.api.explorers.guru/api/blocks?count=1"
 
-# stafi
+# stafi-t
 CURL="https://test-rest-rpc1.stafihub.io/bank/total/ufis"
