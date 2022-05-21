@@ -1,5 +1,0 @@
-# status
-1,11,21,31,41,51 * * * * bash $HOME/status/main.sh >> $HOME/status/main.log 2>&1
-
-# slash
-0 * * * * $HOME/status/slash.sh
