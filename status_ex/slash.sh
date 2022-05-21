@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# chat for log messages, not alarm
+# chat id for log messages, not alarm
 CHAT_ID_LOG="-1703"
 
 # bot token
