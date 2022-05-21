@@ -126,6 +126,9 @@ for CONFIG in *.conf
 do
     . $CONFIG
 
+    NODE=$(cat ${CONFIG}/config.toml | grep -oPm1 "(?<=^laddr = \")([^%]+)(?=\")")
+    CHAIN=$(cat ${CONFIG}/genesis.json | jq .chain_id | sed -E 's/.*"([^"]+)".*/\1/')
+
     echo -e " "
     echo -e "/// $(date '+%F %T') ///"
     echo -e " "
