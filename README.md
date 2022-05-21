@@ -11,5 +11,7 @@ Instruction:
 6. Also you have to create as many `cosmos.conf` files, as many you have on the current server. Customize your config files. You can find examples in the `status_ex` folder.
 7. Run `bash main.sh` to check your settings.
 
-<img width="300" alt="image" src="https://user-images.githubusercontent.com/41644451/169649277-1e3a6d62-7fe9-4025-8267-2229e4fb085e.png">
+<p align="center">
+  <img width="600" height="200" src="https://user-images.githubusercontent.com/41644451/169649277-1e3a6d62-7fe9-4025-8267-2229e4fb085e.png">
+</p>
 
