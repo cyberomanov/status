@@ -10,6 +10,8 @@ Instruction:
 5. In this folder you have to create `main.sh` file, which can be find in `status_ex` folder. You don't have to edit this file, it's ready to use.
 
 ```
+nano $HOME/status/main.sh
+
 #!/bin/bash
 
 function __getLastChainBlockFunc() {
@@ -134,9 +136,11 @@ do
 done
 ```
 
-7. Also you have to create as many `cosmos.conf` files, as many you have on the current server. Customize your config files. You can find examples in the `status_ex` folder.
+7. Also you have to create as many `cosmos.conf` files, as many nodes you have on the current server. Customize your config files. You can find examples in the `status_ex` folder.
 
 ```
+nano $HOME/status/pylons.conf
+
 MONIKER="cyberomanov"
 TOKEN="bedrock"
 DENOM="1000000"
@@ -152,7 +156,6 @@ BOT_TOKEN="228322:xxx-xxx_xxx"
 9. Run `bash main.sh` to check your settings. Normal output:
 
 ```
-
 root@v1131623:~/status# bash main.sh 
  
 /// 2022-05-21 14:16:44 ///
@@ -176,6 +179,8 @@ root@v1131623:~/status#
 9. Create `slash.sh` close to `main.sh`. This bash script will divide group of messages. You can find example in the `status_ex` folder.
 
 ```
+nano $HOME/status/slash.sh
+
 #!/bin/bash
 
 BOT_TOKEN="228322:xxx-xxx_xxx"
@@ -198,3 +203,4 @@ curl --header 'Content-Type: application/json' \
 # slash
 0 * * * * $HOME/status/slash.sh
 ```
+13. Check you logs with `cat $HOME/status/main.log` or `tail $HOME/status/main.log -f`
