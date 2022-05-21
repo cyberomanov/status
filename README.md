@@ -8,6 +8,7 @@ Instruction:
 3. Create at least 2 channels: `alarm` and `log`. Customize them and `get chats IDs`.
 4. Connect to your server and create `status` folder in the `$HOME directory`.
 5. In this folder you have to create `main.sh` file, which can be find in `status_ex` folder. You don't have to edit this file, it's ready to use.
+
 ```
 #!/bin/bash
 
@@ -132,13 +133,68 @@ do
     nodeStatusFunc
 done
 ```
-7. Also you have to create as many `cosmos.conf` files, as many you have on the current server. Customize your config files. You can find examples in the `status_ex` folder.
-8. Run `bash main.sh` to check your settings.
 
-<p align="center">
-  <img width="200" src="https://user-images.githubusercontent.com/41644451/169649277-1e3a6d62-7fe9-4025-8267-2229e4fb085e.png">
-</p>
+7. Also you have to create as many `cosmos.conf` files, as many you have on the current server. Customize your config files. You can find examples in the `status_ex` folder.
+
+```
+MONIKER="cyberomanov"
+TOKEN="bedrock"
+DENOM="1000000"
+COSMOS="/root/go/bin/pylonsd"
+CONFIG="/root/.pylons/config/"
+VALIDATOR_ADDRESS="pylovaloper1upvcsamhmf8r3c8sdhcftk3mz2jxvfm86pzj4y"
+CURL="https://pylons.api.explorers.guru/api/blocks?count=1"
+CHAT_ID_ALARM="-187"
+CHAT_ID_STATUS="-1703"
+BOT_TOKEN="228322:xxx-xxx_xxx"
+```
+
+9. Run `bash main.sh` to check your settings. Normal output:
+
+```
+
+root@v1131623:~/status# bash main.sh 
+ 
+/// 2022-05-21 14:16:44 ///
+ 
+pylons-testnet-3
+
+sync >>> 373010/373010.
+jailed > true.
+ 
+/// 2022-05-21 14:16:48 ///
+ 
+stafihub-public-testnet-2
+
+sync >>> 512287/512287.
+place >> 47/100.
+stake >> 118.12 fis.
+
+root@v1131623:~/status# 
+```
 
 9. Create `slash.sh` close to `main.sh`. This bash script will divide group of messages. You can find example in the `status_ex` folder.
-10. If all is fine, you have to add some rules: `chmod u+x main.sh slash.sh`.
-11. Edit crontab with  
+
+```
+#!/bin/bash
+
+BOT_TOKEN="228322:xxx-xxx_xxx"
+CHAT_ID_LOG="-123"
+
+MESSAGE="<code>/// $(date '+%F %T') ///</code>"
+
+curl --header 'Content-Type: application/json' \
+--request 'POST' \
+--data '{"chat_id":"'"$CHAT_ID_LOG"'","text":"'"$(echo -e $MESSAGE)"'", "parse_mode": "html"}' "https://api.telegram.org/bot$BOT_TOKEN/sendMessage"
+```
+
+11. Add some rules with `chmod u+x main.sh slash.sh`.
+12. Edit crontab with `crontab -e`. You can find example in the `status_ex` folder.
+
+```
+# status
+1,11,21,31,41,51 * * * * bash $HOME/status/main.sh >> $HOME/status/main.log 2>&1
+
+# slash
+0 * * * * $HOME/status/slash.sh
+```
