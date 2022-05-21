@@ -12,6 +12,6 @@ Instruction:
 7. Run `bash main.sh` to check your settings.
 
 <p align="center">
-  <img width="600" height="200" src="https://user-images.githubusercontent.com/41644451/169649277-1e3a6d62-7fe9-4025-8267-2229e4fb085e.png">
+  <img width="200" src="https://user-images.githubusercontent.com/41644451/169649277-1e3a6d62-7fe9-4025-8267-2229e4fb085e.png">
 </p>
 
