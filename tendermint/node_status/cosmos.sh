@@ -46,7 +46,7 @@ function nodeStatusFunc() {
            TEXT="sync >>> ${LATEST_NODE_BLOCK}."
        fi
 
-       # print 'TEXT' into 'main.log' for the sake of history
+       # print 'TEXT' into 'cosmos.log' for the sake of history
        echo ${TEXT}
 
        # add new text to the 'MESSAGE', which will be sent as 'log' or 'alarm'
