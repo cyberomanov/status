@@ -1,5 +1,5 @@
 # status
-Status &amp; alarm log with bash and telegram bot.
+This system will alert you with telegram about jails and inactive status. Also it sends you every hour short info about your node status.
 
 Instruction:
 
