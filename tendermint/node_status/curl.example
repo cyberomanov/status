@@ -11,7 +11,7 @@ CURL="https://api-omniflix.cosmostation.io/v1/status"
 CURL="https://api-provenance.cosmostation.io/v1/status"
 
 # galaxy-m
-CURL="https://galaxy.postcapitalist.io/bank/total/uglx"
+CURL="https://galaxy.postcapitalist.io/blocks/latest"
 
 # meme-m
 CURL="https://api-meme-1.meme.sx/bank/total/umeme"

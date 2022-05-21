@@ -7,6 +7,8 @@ function __getLastChainBlockFunc() {
         LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".block_height" | tr -d '"')
     elif [[ $CURL == *"guru"* ]]; then
         LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".[].height" | tr -d '"')
+    elif [[ $CURL == *"postcapitalist"* ]]; then
+                LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".block.header.height" | tr -d '"')
     else
         LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".height" | tr -d '"')
     fi
@@ -16,8 +18,10 @@ function __getLastChainBlockFunc() {
 
 function nodeStatusFunc() {
 
-   MESSAGE="<b>${CHAIN}</b>\n\n"
-   echo -e "${CHAIN}\n"
+   MESSAGE="<b>${CHAIN}</b>\n"
+   MESSAGE="<b>${MONIKER}</b>\n\n"
+   echo -e "${CHAIN}"
+   echo -e "${MONIKER}\n"
 
    # if 'SEND' become '1' > alarm will be sent
    SEND=0
