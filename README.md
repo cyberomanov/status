@@ -10,6 +10,7 @@ Instruction:
 > You can find `main.sh example` in the [status_ex](https://github.com/cyberomanov/status/tree/main/status_ex) folder.
 5. Also you have to create as many `cosmos.conf` files with `nano $HOME/status/pylons.conf`, as many nodes you have on the current server. Customize your config files.
 > You can find `cosmos.conf example` in the [status_ex](https://github.com/cyberomanov/status/tree/main/status_ex) folder.
+> You can find `supported CURLs` in the [status_ex](https://github.com/cyberomanov/status/tree/main/status_ex) folder.
 6. Run `bash main.sh` to check your settings. Normal output:
 
 ```
