@@ -11,7 +11,9 @@ Instruction:
 
 ```
 nano $HOME/status/main.sh
+```
 
+```
 #!/bin/bash
 
 function __getLastChainBlockFunc() {
@@ -140,7 +142,9 @@ done
 
 ```
 nano $HOME/status/pylons.conf
+```
 
+```
 MONIKER="cyberomanov"
 TOKEN="bedrock"
 DENOM="1000000"
@@ -180,7 +184,9 @@ root@v1131623:~/status#
 
 ```
 nano $HOME/status/slash.sh
+```
 
+```
 #!/bin/bash
 
 BOT_TOKEN="228322:xxx-xxx_xxx"
