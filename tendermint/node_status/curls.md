@@ -12,3 +12,4 @@ dws-t | CURL="https://dws.api.explorers.guru/api/blocks?count=1" |
 quicksilver-t | CURL="https://quicksilver.api.explorers.guru/api/blocks?count=1" |
 stafi-t | CURL="https://test-rest-rpc1.stafihub.io/bank/total/ufis" |
 defund-t | CURL="https://defund.api.explorers.guru/api/blocks?count=1" |
+beezee-m | CURL="https://rest.getbze.com/bank/total/ubze" |
