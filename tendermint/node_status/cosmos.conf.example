@@ -19,7 +19,7 @@ COSMOS="/root/go/bin/pylonsd"
 # path to config folder
 CONFIG="/root/.pylons/config/"
 
-# link to explorer API, dm @cyberomanov if you don't know 'wtf I can find it'
+# link to explorer API, go to curl.md and find the link for your case
 CURL="https://pylons.api.explorers.guru/api/blocks?count=1"
 
 # chat id for alarm messages with notification enabled
