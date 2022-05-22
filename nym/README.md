@@ -5,7 +5,7 @@ Instruction:
 
 1. Create telegram bot via `@FatherBot`, customize it and `get bot API token` ([how_to](https://www.siteguarding.com/en/how-to-get-telegram-bot-api-token)).
 2. Create at least 2 channels: `alarm` and `log`. Customize them, add your bot into your chats and `get chats IDs` ([how_to](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id)).
-3. Connect to your server and create `status` folder in the `$HOME directory` with `mkdir $HOME/status/`.
+3. Connect to your server and create `status` folder in the `$HOME` directory with `mkdir $HOME/status/`.
 4. In this folder you have to create `nym.sh` file with `nano $HOME/status/nym.sh`. You don't have to do any edits on `nym.sh` file, it's ready to use.
 > You can find `nym.sh` in this repository.
 5. Also you have to create as many `nym.conf` files with `nano $HOME/status/nym.conf`, as many nodes you have on the current server. Customize your config files.
@@ -32,4 +32,4 @@ root@ubuntu:~/status#
 8. Add some rules with `chmod u+x nym.sh slash.sh`.
 9. Edit crontab with `crontab -e`.
 > You can find `crontab.example` in this repository.
-10. Check you logs with `cat $HOME/status/nym.log` or `tail $HOME/status/nym.log -f`.
+10. Check your logs with `cat $HOME/status/nym.log` or `tail $HOME/status/nym.log -f`.
