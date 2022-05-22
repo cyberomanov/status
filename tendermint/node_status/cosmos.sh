@@ -36,14 +36,14 @@ function nodeStatusFunc() {
        LATEST_CHAIN_BLOCK=$(__getLastChainBlockFunc)
 
        # if 'CURL' was not set > no compare with explorer height
-       if [[ $CURL != "" ]] && [[ $LATEST_CHAIN_BLOCK != "0" ]] && [[ $LATEST_CHAIN_BLOCK != "null" ]]
+       if [[ $CURL != "" ]] && [[ $LATEST_CHAIN_BLOCK != "" ]] && [[ $LATEST_CHAIN_BLOCK != "0" ]] && [[ $LATEST_CHAIN_BLOCK != "null" ]]
        then
 
            # if we are in the past more than 10 block > alarm
            if (( ${LATEST_CHAIN_BLOCK}-10 > ${LATEST_NODE_BLOCK} )); then SEND=1; fi
            TEXT="sync >>> ${LATEST_CHAIN_BLOCK}/${LATEST_NODE_BLOCK}."
        else
-           TEXT="sync >>> ${LATEST_NODE_BLOCK}."
+           TEXT="sync >>> 0/${LATEST_NODE_BLOCK}."
        fi
 
        # print 'TEXT' into 'cosmos.log' for the sake of history
