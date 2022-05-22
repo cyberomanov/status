@@ -5,9 +5,6 @@ This system will alert you with telegram about jails and inactive status. Also i
   <img width="268" alt="image" src="https://user-images.githubusercontent.com/41644451/169718035-70aa9c84-2a92-41da-9949-ea0ad5dc570a.png">
 </p>
 <p align="center">
-  <img width="241" alt="image" src="https://user-images.githubusercontent.com/41644451/169718096-c93b235e-6909-447e-b694-af0990c42c74.png">
-</p>
-<p align="center">
   <img width="243" alt="image" src="https://user-images.githubusercontent.com/41644451/169718055-c80de78e-f0a3-4652-bcd7-71f9f3593f21.png">
 </p>
 <p align="center">
