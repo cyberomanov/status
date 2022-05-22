@@ -10,7 +10,8 @@ Instruction:
 > You can find `nym.sh` in this repository.
 5. Also you have to create as many `nym.conf` files with `nano $HOME/status/nym.conf`, as many nodes you have on the current server. Customize your config files.
 > You can find `nym.conf.example` in this repository.
-6. Run `bash nym.sh` to check your settings. Normal output:
+6. Install `jq` and `bc` packages with `sudo apt-get install jq bc -y`.
+7. Run `bash nym.sh` to check your settings. Normal output:
 
 ```
 root@ubuntu:~/status# bash nym.sh
@@ -27,9 +28,9 @@ rewards >>> 19.10 nym.
 root@ubuntu:~/status# 
 ```
 
-7. Create `slash.sh` with `nano $HOME/status/slash.sh`, if you don't have one yet. This bash script will divide group of messages.
+8. Create `slash.sh` with `nano $HOME/status/slash.sh`, if you don't have one yet. This bash script will divide group of messages.
 > You can find `slash.sh.example` in this repository.
-8. Add some rules with `chmod u+x nym.sh slash.sh`.
-9. Edit crontab with `crontab -e`.
+9. Add some rules with `chmod u+x nym.sh slash.sh`.
+10. Edit crontab with `crontab -e`.
 > You can find `crontab.example` in this repository.
-10. Check your logs with `cat $HOME/status/nym.log` or `tail $HOME/status/nym.log -f`.
+11. Check your logs with `cat $HOME/status/nym.log` or `tail $HOME/status/nym.log -f`.
