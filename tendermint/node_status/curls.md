@@ -1,4 +1,4 @@
-**project** | **curl value** |
+**project** | **api for CURL** |
 --- | --- |
 gravity-bridge-m | CURL="https://api-gravity-bridge.cosmostation.io/v1/status" |
 sifchain-m | CURL="https://api-sifchain.cosmostation.io/v1/status" |
