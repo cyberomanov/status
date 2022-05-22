@@ -9,7 +9,7 @@ Instruction:
 4. In this folder you have to create `cosmos.sh` file with `nano $HOME/status/cosmos.sh`. You don't have to do any edits on `cosmos.sh` file, it's ready to use.
 > You can find `cosmos.sh` in this repository.
 5. Also you have to create as many `cosmos.conf` files with `nano $HOME/status/cosmos.conf`, as many nodes you have on the current server. Customize your config files.
-> You can find `cosmos.conf.example` and `curl.example` in this repository.
+> You can find `cosmos.conf.example` and `curl.md` in this repository.
 6. Install `jq` and `bc` packages with `sudo apt-get install jq bc -y`.
 7. Run `bash cosmos.sh` to check your settings. Normal output:
 
