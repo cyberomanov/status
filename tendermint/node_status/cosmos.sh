@@ -2,15 +2,15 @@
 
 function __getLastChainBlockFunc() {
 
-    # get the last explorer block with 3 supported creators: cosmostation (mintscan), guru (nodes.guru) and ping (polkachu)
-    if [[ $CURL == *"cosmostation"* ]]; then
+    # get the last explorer block
+    if [[ ${CURL} == *"v1/status"* ]]
+    then
         LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".block_height" | tr -d '"')
-    elif [[ $CURL == *"guru"* ]]; then
-        LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".[].height" | tr -d '"')
-    elif [[ $CURL == *"postcapitalist"* ]]; then
-                LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".block.header.height" | tr -d '"')
-    else
+    elif [[ ${CURL} == *"bank/total"* ]] || [[ ${CURL} == *"blocks/latest"* ]]
+    then
         LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".height" | tr -d '"')
+    else
+        LATEST_CHAIN_BLOCK="0"
     fi
 
     echo ${LATEST_CHAIN_BLOCK}
@@ -32,12 +32,12 @@ function nodeStatusFunc() {
        # get the last block height
        LATEST_NODE_BLOCK=$(echo ${NODE_STATUS} | jq .'SyncInfo'.'latest_block_height' | tr -d '"')
 
-       # if 'CURL' was not set > no compare with explorer height
-       if [[ $CURL != "" ]]
-       then
+       # get the last explorer block height
+       LATEST_CHAIN_BLOCK=$(__getLastChainBlockFunc)
 
-           # get the last explorer block height
-           LATEST_CHAIN_BLOCK=$(__getLastChainBlockFunc)
+       # if 'CURL' was not set > no compare with explorer height
+       if [[ $CURL != "" ]] && [[ $LATEST_CHAIN_BLOCK != "0" ]] && [[ $LATEST_CHAIN_BLOCK != "null" ]]
+       then
 
            # if we are in the past more than 10 block > alarm
            if (( ${LATEST_CHAIN_BLOCK}-10 > ${LATEST_NODE_BLOCK} )); then SEND=1; fi
