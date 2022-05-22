@@ -38,4 +38,4 @@ root@v1131623:~/status#
 8. Add some rules with `chmod u+x cosmos.sh slash.sh`.
 9. Edit crontab with `crontab -e`.
 > You can find `crontab.example` in this repository.
-10. Check you logs with `cat $HOME/status/cosmos.log` or `tail $HOME/status/cosmos.log -f`.
+10. Check your logs with `cat $HOME/status/cosmos.log` or `tail $HOME/status/cosmos.log -f`.
