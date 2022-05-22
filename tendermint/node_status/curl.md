@@ -15,3 +15,4 @@ quicksilver-t | CURL="https://quicksilver.api.explorers.guru/api/blocks/latest" 
 stafi-t | CURL="https://test-rest-rpc1.stafihub.io/bank/total/ufis" |
 defund-t | CURL="https://defund.api.explorers.guru/api/blocks/latest" |
 
+If you want to add your custom CURL into script, you have to open the needed explorer, open `Inspect` with your mouse's right click, open `Network` tab and find a request with `v1/status`, `bank/total` or `blocks/latest` words in the request link. 
