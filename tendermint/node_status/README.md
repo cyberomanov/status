@@ -4,7 +4,7 @@ This system will alert you with telegram about jails and inactive status. Also i
 Instruction:
 
 1. Google `how to create telegram bot via @FatherBot`. Customize your bot (avatar, description and etc.) and `get bot API token`.
-2. Create at least 2 channels: `alarm` and `log`. Customize them, add your bot into chats and `get chats IDs` ([how_to](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id)).
+2. Create at least 2 channels: `alarm` and `log`. Customize them, add your bot into your chats and `get chats IDs` ([how_to](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id)).
 3. Connect to your server and create `status` folder in the `$HOME directory` with `mkdir $HOME/status/`.
 4. In this folder you have to create `cosmos.sh` file with `nano $HOME/status/cosmos.sh`. You don't have to do any edits on `cosmos.sh` file, it's ready to use.
 > You can find `cosmos.sh` in this repository.
