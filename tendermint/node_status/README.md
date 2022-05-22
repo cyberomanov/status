@@ -33,7 +33,7 @@ stake >> 118.12 fis.
 root@v1131623:~/status# 
 ```
 
-7. Create `slash.sh` with `nano $HOME/status/slash.sh`. This bash script will divide group of messages.
+7. Create `slash.sh` with `nano $HOME/status/slash.sh`, if you don't have one yet. This bash script will divide group of messages.
 > You can find `slash.sh.example` in this repository.
 8. Add some rules with `chmod u+x cosmos.sh slash.sh`.
 9. Edit crontab with `crontab -e`.
