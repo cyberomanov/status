@@ -34,6 +34,7 @@ CURL="https://test-rest-rpc1.stafihub.io/bank/total/ufis"
 # defund-t
 CURL="https://defund.api.explorers.guru/api/blocks?count=1"
 
-| Таблицы       | Это                |
-| ------------- |:------------------:|
-| quicksilver-t     | CURL="https://quicksilver.api.explorers.guru/api/blocks?count=1" |
+Markdown | не такой | красивый
+--- | --- | ---
+*Но выводится* | `так же` | **клево**
+1 | 2 | 3
