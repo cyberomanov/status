@@ -5,7 +5,7 @@ DENOM="1000000"
 TOKEN="nym"
 IP=$(wget -qO- eth0.me)
 
-function __send() {
+function __sendFunc() {
     # print 'TEXT' into 'nym.log' for the sake of history
     echo ${TEXT}
 
@@ -29,9 +29,9 @@ function nodeStatusFunc() {
     then
         SEND=1
         TEXT="_hour/day > $LAST_HOUR%/$LAST_DAY%."
-        __send
+        __sendFunc
     fi
-    
+
     # get info about node status
     TOTAL_INFO=$(curl -s ${CURL}${IDENTITY})
 
@@ -42,7 +42,7 @@ function nodeStatusFunc() {
         SEND=1
         VERSION=$(echo ${TOTAL_INFO} | jq ".mixnode.mix_node.version" | tr -d '"')
         TEXT="_version >> ${VERSION}.\n_outdated > ${OUTDATED}."
-        __send
+        __sendFunc
     fi
 
     # if status is not active > alarm
@@ -51,7 +51,7 @@ function nodeStatusFunc() {
     then
         SEND=1
         TEXT="_status >>> ${STATUS}."
-        __send
+        __sendFunc
     fi
 
     # get info about stake
@@ -59,7 +59,7 @@ function nodeStatusFunc() {
     SELF_STAKE=$(echo $(echo "scale=2;$(echo ${TOTAL_INFO} | jq ".mixnode.pledge_amount.amount" | tr -d '"')/${DENOM}" | bc))
     TOTAL_STAKE=$(echo ${SELF_STAKE} + ${DELEGATION} | bc -l)
     TEXT="stake >>>>> ${TOTAL_STAKE} ${TOKEN}."
-    __send
+    __sendFunc
 
     # get info about rewards
     TOTAL_REWARDS=$(curl -s ${CURL}${IDENTITY}"/estimated_reward")
@@ -70,12 +70,12 @@ function nodeStatusFunc() {
     if (( $(bc <<< "${ESTIMATED_REWARDS_H} < 1") )); then ESTIMATED_REWARDS_H="0${ESTIMATED_REWARDS_H}"; fi
     if (( $(bc <<< "${ESTIMATED_REWARDS_M} < 1") )); then ESTIMATED_REWARDS_M="0${ESTIMATED_REWARDS_M}"; fi
     TEXT="salary >>>> $ESTIMATED_REWARDS_H ${TOKEN}/h, $ESTIMATED_REWARDS_M ${TOKEN}/m."
-    __send
+    __sendFunc
 
     REWARDS=$(echo $(echo "scale=2;$(echo ${TOTAL_INFO} | jq ".mixnode.accumulated_rewards" | tr -d '"')/${DENOM}" | bc))
     if (( $(bc <<< "${REWARDS} < 1") )); then REWARDS="0${REWARDS}"; fi
     TEXT="unpaid >>>> ${REWARDS} ${TOKEN}."
-    __send
+    __sendFunc
 
     if [[ ${SEND} == "1" ]]; then
        curl --header 'Content-Type: application/json' \
