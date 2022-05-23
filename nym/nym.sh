@@ -6,8 +6,12 @@ TOKEN="nym"
 IP=$(wget -qO- eth0.me)
 
 function __send() {
-   echo -e ${TEXT}
-   MESSAGE=${MESSAGE}'<code>'${TEXT}'</code>\n'
+    # print 'TEXT' into 'nym.log' for the sake of history
+    echo ${TEXT}
+
+    # add new text to the 'MESSAGE', which will be sent as 'log' or 'alarm'
+    # if 'SEND' == 1, it becomes 'alarm', otherwise it's 'log'
+    MESSAGE=${MESSAGE}'<code>'${TEXT}'</code>\n'
 }
 
 function nodeStatusFunc() {
