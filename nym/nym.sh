@@ -5,58 +5,73 @@ DENOM="1000000"
 TOKEN="nym"
 IP=$(wget -qO- eth0.me)
 
+function __send() {
+   echo -e ${TEXT}
+   MESSAGE=${MESSAGE}'<code>'${TEXT}'</code>\n'
+}
+
 function nodeStatusFunc() {
-    MESSAGE="<b>${TOKEN} | ${MONIKER}</b>\n\n"
-    echo -e "${TOKEN} | ${MONIKER}\n"
+    MESSAGE="<b>${PROJECT} | ${MONIKER}</b>\n\n"
+    echo -e "${PROJECT} | ${MONIKER}\n"
     SEND=0
 
+    # get uptime
+    UPTIME_TOTAL=$(curl -s ${CURL}${IDENTITY}"/uptime")
+    LAST_HOUR=$(echo ${UPTIME_TOTAL} | jq ".last_hour" | tr -d '"')
+    LAST_DAY=$(echo ${UPTIME_TOTAL} | jq ".last_day" | tr -d '"')
+
+    # if 'last hour uptime' is low > alarm
+    if (( ${LAST_HOUR} < ${UPTIME} ))
+    then
+        SEND=1
+        TEXT="_hour/day > $LAST_HOUR%/$LAST_DAY%."
+        __send
+    fi
+    
+    # get info about node status
     TOTAL_INFO=$(curl -s ${CURL}${IDENTITY})
+
+    # if node is outdated > alarm
+    OUTDATED=$(echo ${TOTAL_INFO} | jq ".outdated" | tr -d '"')
+    if [[ "${OUTDATED}" == "true" ]]
+    then
+        SEND=1
+        VERSION=$(echo ${TOTAL_INFO} | jq ".mixnode.mix_node.version" | tr -d '"')
+        TEXT="_version >> ${VERSION}.\n_outdated > ${OUTDATED}."
+        __send
+    fi
+
+    # if status is not active > alarm
+    STATUS=$(echo ${TOTAL_INFO} | jq ".mixnode.status" | tr -d '"')
+    if [[ "${STATUS}" != "active" ]]
+    then
+        SEND=1
+        TEXT="_status >>> ${STATUS}."
+        __send
+    fi
+
+    # get info about stake
     DELEGATION=$(echo $(echo "scale=2;$(echo ${TOTAL_INFO} | jq ".mixnode.total_delegation.amount" | tr -d '"')/${DENOM}" | bc))
     SELF_STAKE=$(echo $(echo "scale=2;$(echo ${TOTAL_INFO} | jq ".mixnode.pledge_amount.amount" | tr -d '"')/${DENOM}" | bc))
     TOTAL_STAKE=$(echo ${SELF_STAKE} + ${DELEGATION} | bc -l)
     TEXT="stake >>>>> ${TOTAL_STAKE} ${TOKEN}."
-    echo ${TEXT}
-    MESSAGE=${MESSAGE}'<code>'${TEXT}'</code>\n'
+    __send
 
-    OUTDATED=$(echo ${TOTAL_INFO} | jq ".outdated" | tr -d '"')
-    if [[ "${OUTDATED}" == "true" ]]; then
-        SEND=1
-        VERSION=$(echo ${TOTAL_INFO} | jq ".mixnode.mix_node.version" | tr -d '"')
-        TEXT="version >>> ${VERSION}."
-        echo ${TEXT}
-        MESSAGE=${MESSAGE}'<code>'${TEXT}'</code>\n'
-        TEXT="outdated >> ${OUTDATED}."
-        echo ${TEXT}
-        MESSAGE=${MESSAGE}'<code>'${TEXT}'</code>\n'
-    fi
-
-    STATUS=$(echo ${TOTAL_INFO} | jq ".mixnode.status" | tr -d '"')
-    if [[ "${STATUS}" != "active" ]]; then
-        SEND=1
-        TEXT="status >>>> ${STATUS}."
-        echo ${TEXT}
-        MESSAGE=${MESSAGE}'<code>'${TEXT}'</code>\n'
-    fi
-
-    UPTIME_TOTAL=$(curl -s ${CURL}${IDENTITY}"/uptime")
-    LAST_HOUR=$(echo ${UPTIME_TOTAL} | jq ".last_hour" | tr -d '"')
-    LAST_DAY=$(echo ${UPTIME_TOTAL} | jq ".last_day" | tr -d '"')
-    if (( ${LAST_HOUR} < 90 )); then SEND=1; fi
-    TEXT="uptime >>>> $LAST_HOUR%/h, $LAST_DAY%/d."
-    echo ${TEXT}
-    MESSAGE=${MESSAGE}'<code>'${TEXT}'</code>\n'
-
+    # get info about rewards
     TOTAL_REWARDS=$(curl -s ${CURL}${IDENTITY}"/estimated_reward")
-    ESTIMATED_REWARDS=$(echo $(echo "scale=4;$(echo ${TOTAL_REWARDS} | jq ".estimated_operator_reward" | tr -d '"')/${DENOM}" | bc))
-    if (( $(bc <<< "${ESTIMATED_REWARDS} < 1") )); then ESTIMATED_REWARDS="0${ESTIMATED_REWARDS}"; fi
-    TEXT="estimated > $ESTIMATED_REWARDS ${TOKEN} per hour."
-    echo ${TEXT}
-    MESSAGE=${MESSAGE}'<code>'${TEXT}'</code>\n'
+
+    # get info about estimated rewards
+    ESTIMATED_REWARDS_H=$(echo $(echo "scale=3;$(echo ${TOTAL_REWARDS} | jq ".estimated_operator_reward" | tr -d '"')/${DENOM}" | bc))
+    ESTIMATED_REWARDS_M=$(echo ${ESTIMATED_REWARDS_H}*720 | bc -l)
+    if (( $(bc <<< "${ESTIMATED_REWARDS_H} < 1") )); then ESTIMATED_REWARDS_H="0${ESTIMATED_REWARDS_H}"; fi
+    if (( $(bc <<< "${ESTIMATED_REWARDS_M} < 1") )); then ESTIMATED_REWARDS_M="0${ESTIMATED_REWARDS_M}"; fi
+    TEXT="salary >>>> $ESTIMATED_REWARDS_H ${TOKEN}/h, $ESTIMATED_REWARDS_M ${TOKEN}/m."
+    __send
 
     REWARDS=$(echo $(echo "scale=2;$(echo ${TOTAL_INFO} | jq ".mixnode.accumulated_rewards" | tr -d '"')/${DENOM}" | bc))
-    TEXT="rewards >>> ${REWARDS} ${TOKEN}."
-    echo ${TEXT}
-    MESSAGE=${MESSAGE}'<code>'${TEXT}'</code>\n'
+    if (( $(bc <<< "${REWARDS} < 1") )); then REWARDS="0${REWARDS}"; fi
+    TEXT="unpaid >>>> ${REWARDS} ${TOKEN}."
+    __send
 
     if [[ ${SEND} == "1" ]]; then
        curl --header 'Content-Type: application/json' \
