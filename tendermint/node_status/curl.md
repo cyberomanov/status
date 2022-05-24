@@ -15,6 +15,7 @@ pylons-t | CURL="https://pylons.api.explorers.guru/api/blocks/latest" |
 dws-t | CURL="https://dws.api.explorers.guru/api/blocks/latest" |
 quicksilver-t | CURL="https://quicksilver.api.explorers.guru/api/blocks/latest" |
 defund-t | CURL="https://defund.api.explorers.guru/api/blocks/latest" |
+sei-t | CURL="https://sei.api.explorers.guru/api/blocks/latest" |
 
 If you want to add your custom CURL into script, you have to open the needed explorer, open `Inspect` with your mouse's right click, open `Network` tab and find a request with `v1/status`, `bank/total` or `blocks/latest` words in the request link. 
 
