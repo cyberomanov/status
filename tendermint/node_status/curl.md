@@ -17,6 +17,9 @@ quicksilver-t | CURL="https://quicksilver.api.explorers.guru/api/blocks/latest" 
 defund-t | CURL="https://defund.api.explorers.guru/api/blocks/latest" |
 sei-t | CURL="https://sei.api.explorers.guru/api/blocks/latest" |
 celestia-t | CURL="https://celestia.api.explorers.guru/api/blocks/latest" |
+another-t | CURL="https://api-anone.notional.ventures/bank/total/uan1" |
+uptik-t | CURL="https://seed1.testnet.uptick.network:1318/bank/total" |
+cosmic-t | https://coho.api.explorers.guru/api/blocks/latest |
 
 If you want to add your custom CURL into script, you have to open the needed explorer, open `Inspect` with your mouse's right click, open `Network` tab and find a request with `v1/status`, `bank/total` or `blocks/latest` words in the request link. 
 
