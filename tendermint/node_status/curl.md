@@ -20,7 +20,7 @@ celestia-t | CURL="https://celestia.api.explorers.guru/api/blocks/latest" |
 another-t | CURL="https://api-anone.notional.ventures/bank/total/uan1" |
 uptik-t | CURL="https://seed1.testnet.uptick.network:1318/bank/total" |
 cosmic-t | CURL="https://coho.api.explorers.guru/api/blocks/latest" |
-chromic-t | CURL=https://chtd-api.skynetvalidators.com/bank/total/ucht |
+chromic-t | CURL="https://chtd-api.skynetvalidators.com/bank/total/ucht" |
 aura-t | CURL="https://halo-api.aurascan.io/api/v1/status" |
 vidulum-t | CURL="https://mainnet-lcd.vidulum.app/bank/total/uvdl" |
 
