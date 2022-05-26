@@ -14,10 +14,14 @@ function __getLastChainBlockFunc() {
     # get the last explorer block
     if [[ ${CURL} == *"v1/status"* ]]
     then
-        LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".block_height" | tr -d '"')
+        LATEST_CHAIN_BLOCK=$(curl -sk ${CURL} | jq ".block_height" | tr -d '"')
+        if [[ ${LATEST_CHAIN_BLOCK} == "null" ]]
+        then
+            LATEST_CHAIN_BLOCK=$(curl -sk ${CURL} | jq ".data.block_height" | tr -d '"')
+        fi
     elif [[ ${CURL} == *"bank/total"* ]] || [[ ${CURL} == *"blocks/latest"* ]]
     then
-        LATEST_CHAIN_BLOCK=$(curl -s ${CURL} | jq ".height" | tr -d '"')
+        LATEST_CHAIN_BLOCK=$(curl -sk ${CURL} | jq ".height" | tr -d '"')
     else
         LATEST_CHAIN_BLOCK="0"
     fi
@@ -144,7 +148,7 @@ function nodeStatusFunc() {
        else
 
            # get local explorer snapshot and request some info about our validator
-           EXPLORER=$(${COSMOS} q staking validators --node $NODE --output json --home ${NODE_HOME} --limit=1000)
+           EXPLORER=$(${COSMOS} q staking validators --node $NODE --output json --home ${NODE_HOME} --limit=10000)
            VALIDATORS_COUNT=$(echo ${EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '.tokens' | sort -gr | wc -l)
            VALIDATOR_STRING=$(echo ${EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep -F ${MONIKER})
            VALIDATOR_POSITION=$(echo ${VALIDATOR_STRING} | awk '{print $1}')
@@ -152,7 +156,7 @@ function nodeStatusFunc() {
 
            # alarm if validator is close to become inactive
            SAFE_VALIDATOR_PLACE=$(echo ${ACTIVE_VALIDATOR_SET} - ${POSITION_ALARM} | bc -l)
-           
+
            if (( ${VALIDATOR_POSITION} > ${SAFE_VALIDATOR_PLACE} ))
            then
                SEND=1
