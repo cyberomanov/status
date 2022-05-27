@@ -8,7 +8,7 @@ Instruction:
 3. Connect to your server and create `status` folder in the `$HOME directory` with `mkdir $HOME/status/`.
 4. In this folder you have to create `ironfish.py` file with `nano $HOME/status/ironfish.py` and set following variables: `telegram_bot_api`, `telegram_chat_id` and `urls`.
 > You can find `ironfish.py` in this repository.
-5. Install `python3`, if you don't have one ([how_to](https://www.makeuseof.com/install-python-ubuntu/)).
+5. Install `python3`, `pip`, if you don't have them yet and run `pip install requests datetime` ([how_to](https://www.makeuseof.com/install-python-ubuntu/)).
 6. Run `python3 ironfish.py` to check your settings. Normal output:
 
 ```
