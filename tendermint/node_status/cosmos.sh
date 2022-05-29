@@ -87,6 +87,60 @@ function __getSignedAndMissedBlocksFunc() {
     __sendFunc
 }
 
+function __getUnvotedProposalsFunc() {
+
+    # get proposals
+    PROPOSALS=$(${COSMOS} q gov proposals --node ${NODE} --output json 2>&1)
+
+    # if at least one proposal exists
+    if [[ ${PROPOSALS} != *"no proposals found"* ]]
+    then
+        # get array of active proposals
+        ACTIVE_PROPOSALS_STRING=$(echo ${PROPOSALS} | jq '.proposals[] | select(.status=="PROPOSAL_STATUS_VOTING_PERIOD")' | jq '.proposal_id' | tr -d '"')
+        ACTIVE_PROPOSALS_ARRAY=($(echo "$ACTIVE_PROPOSALS_STRING" | tr ' ' '\n'))
+
+        # init array of unvoted proposals
+        UNVOTED_ARRAY=( )
+
+        # run loop on each proposal
+        for i in "${!ACTIVE_PROPOSALS_ARRAY[@]}"
+        do
+
+            # if vote does not exist, add proposal id to 'UNVOTED_ARRAY'
+            VOTE=$(${COSMOS} q gov votes ${ACTIVE_PROPOSALS_ARRAY[i]} --limit 999999999 --node ${NODE} --output json | jq '.votes[].voter' | tr -d '"' | grep ${DELEGATOR_ADDRESS})
+            if [[ ${VOTE} == "" ]]
+            then
+                UNVOTED_ARRAY+=(${ACTIVE_PROPOSALS_ARRAY[i]})
+            fi
+        done
+
+            # if exists at least one unvoted proposal
+            if (( ${#UNVOTED_ARRAY[@]} > 0 ))
+            then
+                TEXT="_gov >>>>"
+
+                # add proposal id to message
+                for i in "${!UNVOTED_ARRAY[@]}"
+                do
+                TEXT=${TEXT}' #'${UNVOTED_ARRAY[i]}
+
+                # if current id is not the lastest one > add ','; else > add '.'
+                if (( ${i} < ${#UNVOTED_ARRAY[@]}-1 ))
+                then
+                    TEXT=${TEXT}','
+                else
+                    TEXT=${TEXT}'.'
+                fi
+            done
+        else
+            TEXT="gov >>>>> no active proposals."
+        fi
+    else
+        TEXT="gov >>>>> no any proposals."
+    fi
+    __sendFunc
+}
+
 
 function nodeStatusFunc() {
 
@@ -95,10 +149,10 @@ function nodeStatusFunc() {
 
    # if 'SEND' become '1' > alarm will be sent
    SEND=0
-   NODE_STATUS=$(${COSMOS} status 2>&1 --node ${NODE} --home ${NODE_HOME})
+   NODE_STATUS=$(timeout 5s ${COSMOS} status 2>&1 --node ${NODE} --home ${NODE_HOME})
 
    # if 'NODE_STATUS' response contains 'connection refused' > instant alarm
-   if [[ $NODE_STATUS != *"connection refused"* ]]
+   if [[ ${NODE_STATUS} != *"connection refused"* ]] && [[ ${NODE_STATUS} != "" ]]
    then
 
        # get the last block height
@@ -124,77 +178,89 @@ function nodeStatusFunc() {
        fi
        __sendFunc
 
-       # get validator info
-       VALIDATOR_INFO=$(${COSMOS} query staking validator ${VALIDATOR_ADDRESS} --node $NODE --output json --home ${NODE_HOME})
-       BOND_STATUS=$(echo ${VALIDATOR_INFO} | jq .'status' | tr -d '"')
-
-       # if 'BOND_STATUS' is different than 'BOND_STATUS_BONDED' > alarm
-       if [[ "${BOND_STATUS}" != "BOND_STATUS_BONDED" ]]
+       # if there is no problem with height
+       if [[ ${SEND} == "0" ]]
        then
-           SEND=1
+           # get validator info
+           VALIDATOR_INFO=$(${COSMOS} query staking validator ${VALIDATOR_ADDRESS} --node $NODE --output json --home ${NODE_HOME})
+           BOND_STATUS=$(echo ${VALIDATOR_INFO} | jq .'status' | tr -d '"')
 
-           # if 'JAILED_STATUS' is 'true' > alarm with 'jailed > true.'
-           # if 'JAILED_STATUS' is 'true' > alarm with 'active* > false.' *active - active set
-           JAILED_STATUS=$(echo ${VALIDATOR_INFO} | jq .'jailed')
-           if [[ "${JAILED_STATUS}" == "true" ]]
-           then
-               TEXT="jailed >> ${JAILED_STATUS}."
-           else
-               TEXT="active >> false."
-           fi
-           __sendFunc
-
-       # if 'BOND_STATUS' is 'BOND_STATUS_BONDED' > continue
-       else
-
-           # get local explorer snapshot and request some info about our validator
-           EXPLORER=$(${COSMOS} q staking validators --node $NODE --output json --home ${NODE_HOME} --limit=10000)
-           VALIDATORS_COUNT=$(echo ${EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '.tokens' | sort -gr | wc -l)
-           VALIDATOR_STRING=$(echo ${EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep -F ${MONIKER})
-           VALIDATOR_POSITION=$(echo ${VALIDATOR_STRING} | awk '{print $1}')
-           ACTIVE_VALIDATOR_SET=$(${COSMOS} q staking params --node ${NODE} --output json --home ${NODE_HOME} | jq ."max_validators")
-
-           # alarm if validator is close to become inactive
-           SAFE_VALIDATOR_PLACE=$(echo ${ACTIVE_VALIDATOR_SET} - ${POSITION_ALARM} | bc -l)
-
-           if (( ${VALIDATOR_POSITION} > ${SAFE_VALIDATOR_PLACE} ))
+           # if 'BOND_STATUS' is different than 'BOND_STATUS_BONDED' > alarm
+           if [[ "${BOND_STATUS}" != "BOND_STATUS_BONDED" ]]
            then
                SEND=1
-               TEXT="_place >> ${VALIDATOR_POSITION}/${ACTIVE_VALIDATOR_SET}."
+
+               # if 'JAILED_STATUS' is 'true' > alarm with 'jailed > true.'
+               # if 'JAILED_STATUS' is 'true' > alarm with 'active* > false.' *active - active set
+               JAILED_STATUS=$(echo ${VALIDATOR_INFO} | jq .'jailed')
+               if [[ "${JAILED_STATUS}" == "true" ]]
+               then
+                   TEXT="_jailed > ${JAILED_STATUS}."
+               else
+                   TEXT="_active > false."
+               fi
+               __sendFunc
+
+           # if 'BOND_STATUS' is 'BOND_STATUS_BONDED' > continue
            else
-               TEXT="place >>> ${VALIDATOR_POSITION}/${ACTIVE_VALIDATOR_SET}."
+
+               # get local explorer snapshot and request some info about our validator
+               EXPLORER=$(${COSMOS} q staking validators --node $NODE --output json --home ${NODE_HOME} --limit=10000)
+               VALIDATORS_COUNT=$(echo ${EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '.tokens' | sort -gr | wc -l)
+               VALIDATOR_STRING=$(echo ${EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep -F ${MONIKER})
+               VALIDATOR_POSITION=$(echo ${VALIDATOR_STRING} | awk '{print $1}')
+               ACTIVE_VALIDATOR_SET=$(${COSMOS} q staking params --node ${NODE} --output json --home ${NODE_HOME} | jq ."max_validators")
+
+               # alarm if validator is close to become inactive
+               SAFE_VALIDATOR_PLACE=$(echo ${ACTIVE_VALIDATOR_SET} - ${POSITION_ALARM} | bc -l)
+
+               if (( ${VALIDATOR_POSITION} > ${SAFE_VALIDATOR_PLACE} ))
+               then
+                   SEND=1
+                   TEXT="_place >> ${VALIDATOR_POSITION}/${ACTIVE_VALIDATOR_SET}."
+               else
+                   TEXT="place >>> ${VALIDATOR_POSITION}/${ACTIVE_VALIDATOR_SET}."
+               fi
+               __sendFunc
+
+               # validator active stake
+               VALIDATOR_STAKE=$(echo ${VALIDATOR_STRING} | awk '{print $2}')
+               TEXT="stake >>> $(echo "scale=2;${VALIDATOR_STAKE}/${DENOM}" | bc) ${TOKEN}."
+               __sendFunc
            fi
-           __sendFunc
 
-           # validator active stake
-           VALIDATOR_STAKE=$(echo ${VALIDATOR_STRING} | awk '{print $2}')
-           TEXT="stake >>> $(echo "scale=2;${VALIDATOR_STAKE}/${DENOM}" | bc) ${TOKEN}."
-           __sendFunc
+           __getSignedAndMissedBlocksFunc
+           __getUnvotedProposalsFunc
+
        fi
-       __getSignedAndMissedBlocksFunc
-    else
+   else
 
-       # if connection is refused > alarm
+       # if connection is refused or we lost connection > alarm
        SEND=1
-       TEXT="connection is refused."
+
+       if [[ ${NODE_STATUS} == "" ]]
+       then
+           TEXT="_we lost any connection."
+       else
+           TEXT="_connection is refused."
+       fi
        __sendFunc
+   fi
 
-    fi
-
-    # if 'SEND' == 1 > send 'MESSAGE' into 'alarm telegram channel'
-    if [[ ${SEND} == "1" ]]
-    then
-        curl --header 'Content-Type: application/json' \
-             --request 'POST' \
-             --data '{"chat_id":"'"$CHAT_ID_ALARM"'", "text":"'"$(echo -e $MESSAGE)"'", "parse_mode": "html"}' "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
-        > /dev/null 2>&1
-    # send 'MESSAGE' into 'log telegram channel'
-    elif (( $(echo "$(date +%M) < 10" | bc -l) )); then
-        curl --header 'Content-Type: application/json' \
-             --request 'POST' \
-             --data '{"chat_id":"'"$CHAT_ID_STATUS"'", "text":"'"$(echo -e $MESSAGE)"'", "parse_mode": "html"}' "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
-        > /dev/null 2>&1
-    fi
+   # if 'SEND' == 1 > send 'MESSAGE' into 'alarm telegram channel'
+   if [[ ${SEND} == "1" ]]
+   then
+       curl --header 'Content-Type: application/json' \
+            --request 'POST' \
+            --data '{"chat_id":"'"$CHAT_ID_ALARM"'", "text":"'"$(echo -e $MESSAGE)"'", "parse_mode": "html"}' "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
+            > /dev/null 2>&1
+   # send 'MESSAGE' into 'log telegram channel'
+   elif (( $(echo "$(date +%M) < 10" | bc -l) )); then
+       curl --header 'Content-Type: application/json' \
+            --request 'POST' \
+            --data '{"chat_id":"'"$CHAT_ID_STATUS"'", "text":"'"$(echo -e $MESSAGE)"'", "parse_mode": "html"}' "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
+            > /dev/null 2>&1
+   fi
 }
 
 # move into 'status' folder
