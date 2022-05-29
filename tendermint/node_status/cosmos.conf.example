@@ -1,6 +1,9 @@
 # validator moniker
 MONIKER="cyberomanov"
 
+# delegator
+DELEGATOR_ADDRESS="pylo1upvcsamhmf8r3c8sdhcftk3mz2jxvfm8lf09wg"
+
 # valoper
 VALIDATOR_ADDRESS="pylovaloper1upvcsamhmf8r3c8sdhcftk3mz2jxvfm86pzj4y"
 
