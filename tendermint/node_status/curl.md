@@ -10,6 +10,7 @@ meme-m | CURL="https://api-meme-1.meme.sx/bank/total/umeme" |
 beezee-m | CURL="https://rest.getbze.com/bank/total/ubze" |
 vidulum-m | CURL="https://mainnet-lcd.vidulum.app/bank/total/uvdl" |
 chromic-m | CURL="https://chtd-api.skynetvalidators.com/bank/total/ucht" |
+dig-m | CURL="https://api-1-dig.notional.ventures/bank/total/udig" |
  | |
 kyve-t | CURL="https://api.explorer.kyve.network/bank/total/tkyve" |
 stafi-t | CURL="https://test-rest-rpc1.stafihub.io/bank/total/ufis" |
@@ -24,7 +25,6 @@ uptik-t | CURL="https://seed1.testnet.uptick.network:1318/bank/total" |
 cosmic-t | CURL="https://coho.api.explorers.guru/api/blocks/latest" |
 aura-t | CURL="https://halo-api.aurascan.io/api/v1/status" |
 clan-t | CURL="https://api.clan.testnet.run/bank/total/uclan" |
-dig-t | CURL="https://api-1-dig.notional.ventures/bank/total/udig" |
 
 If you want to add your custom CURL into script, you have to open the needed explorer, open `Inspect` with your mouse's right click, open `Network` tab and find a request with `v1/status`, `bank/total` or `blocks/latest` words in the request link. 
 
