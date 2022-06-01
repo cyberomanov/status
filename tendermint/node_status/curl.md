@@ -25,6 +25,7 @@ uptik-t | CURL="https://seed1.testnet.uptick.network:1318/bank/total" |
 cosmic-t | CURL="https://coho.api.explorers.guru/api/blocks/latest" |
 aura-t | CURL="https://halo-api.aurascan.io/api/v1/status" |
 clan-t | CURL="https://api.clan.testnet.run/bank/total/uclan" |
+kujira-t | CURL="https://kujira-testnet.synergynodes.com/bank/total/ukuji" |
 
 If you want to add your custom CURL into script, you have to open the needed explorer, open `Inspect` with your mouse's right click, open `Network` tab and find a request with `v1/status`, `bank/total` or `blocks/latest` words in the request link. 
 
