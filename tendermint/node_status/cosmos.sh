@@ -257,40 +257,56 @@ function nodeStatusFunc() {
             --request 'POST' \
             --data '{"chat_id":"'"$CHAT_ID_ALARM"'", "text":"'"$(echo -e $MESSAGE)"'", "parse_mode": "html"}' "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
             > /dev/null 2>&1
-   # send 'MESSAGE' into 'log telegram channel'
    elif (( $(echo "$(date +%M) < 10" | bc -l) )); then
-       curl --header 'Content-Type: application/json' \
-            --request 'POST' \
-            --data '{"chat_id":"'"$CHAT_ID_STATUS"'", "text":"'"$(echo -e $MESSAGE)"'", "parse_mode": "html"}' "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
-            > /dev/null 2>&1
+
+       # write message text into 'message_log' variable to send all logs via one message
+       MESSAGE_LOG=${MESSAGE_LOG}${MESSAGE}'\n'
    fi
 }
 
-# move into 'status' folder
-cd $HOME/status/
+function mainFunc() {
 
-# run 'nodeStatusFunc' with every '*.conf' file in the 'status' folder
-for CONFIG in *.conf
-do
+    # init 'message_log' variable
+    MESSAGE_LOG=""
 
-    # if config at least contains 'COSMOS' string, then go
-    if [[ $(cat $CONFIG) == *"COSMOS"* ]]
-    then
+    # move into 'status' folder
+    cd $HOME/status/
 
-        # read the config
-        . $CONFIG
-        # get '--node' and '--chain' value
-        NODE=$(cat ${CONFIG}/config.toml | grep -oPm1 "(?<=^laddr = \")([^%]+)(?=\")")
-        NODE_HOME=$(echo $CONFIG | rev | cut -c 8- | rev)
-        CHAIN=$(cat ${CONFIG}/genesis.json | jq .chain_id | sed -E 's/.*"([^"]+)".*/\1/')
-        PORT=$(echo ${NODE} | awk 'NR==1 {print; exit}' | grep -o ":[0-9]*" | awk 'NR==2 {print; exit}' | cut -c 2-)
+    # run 'nodeStatusFunc' with every '*.conf' file in the 'status' folder
+    for CONFIG in *.conf
+    do
 
-        # print the current time
-        echo -e " "
-        echo -e "/// $(date '+%F %T') ///"
-        echo -e " "
+        # if config at least contains 'COSMOS' string, then go
+        if [[ $(cat $CONFIG) == *"COSMOS"* ]]
+        then
 
-        # run main func
+            # read the config
+            . $CONFIG
+            # get '--node' and '--chain' value
+            NODE=$(cat ${CONFIG}/config.toml | grep -oPm1 "(?<=^laddr = \")([^%]+)(?=\")")
+            NODE_HOME=$(echo $CONFIG | rev | cut -c 8- | rev)
+            CHAIN=$(cat ${CONFIG}/genesis.json | jq .chain_id | sed -E 's/.*"([^"]+)".*/\1/')
+            PORT=$(echo ${NODE} | awk 'NR==1 {print; exit}' | grep -o ":[0-9]*" | awk 'NR==2 {print; exit}' | cut -c 2-)
+
+            # print the current time
+            echo -e " "
+            echo -e "/// $(date '+%F %T') ///"
+            echo -e " "
+
+        # run 'nodeStatusFunc'
         nodeStatusFunc
-    fi
-done
+        fi
+    done
+
+    # read 'cosmos.conf'
+    . cosmos.conf
+
+    # sending message
+    curl --header 'Content-Type: application/json' \
+         --request 'POST' \
+         --data '{"chat_id":"'"${CHAT_ID_STATUS}"'", "text":"'"$(echo -e ${MESSAGE_LOG})"'", "parse_mode": "html"}' "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+         > /dev/null 2>&1
+}
+
+# run 'mainFunc'
+mainFunc
