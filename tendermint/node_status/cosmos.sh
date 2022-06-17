@@ -22,6 +22,9 @@ function __getLastChainBlockFunc() {
     elif [[ ${CURL} == *"bank/total"* ]] || [[ ${CURL} == *"blocks/latest"* ]]
     then
         LATEST_CHAIN_BLOCK=$(curl -sk ${CURL} | jq ".height" | tr -d '"')
+    elif [[ ${CURL} == *"block?latest"* ]]
+    then
+        LATEST_CHAIN_BLOCK=$(curl -sk ${CURL} | jq ".result.block.header.height" | tr -d '"')
     else
         LATEST_CHAIN_BLOCK="0"
     fi
