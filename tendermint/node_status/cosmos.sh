@@ -191,15 +191,21 @@ function nodeStatusFunc() {
            # if 'BOND_STATUS' is different than 'BOND_STATUS_BONDED' > alarm
            if [[ "${BOND_STATUS}" != "BOND_STATUS_BONDED" ]]
            then
-               SEND=1
 
                # if 'JAILED_STATUS' is 'true' > alarm with 'jailed > true.'
                # if 'JAILED_STATUS' is 'true' > alarm with 'active* > false.' *active - active set
                JAILED_STATUS=$(echo ${VALIDATOR_INFO} | jq .'jailed')
                if [[ "${JAILED_STATUS}" == "true" ]]
                then
+                   SEND=1
                    TEXT="_jailed > ${JAILED_STATUS}."
                else
+
+                   # if 'ignore_inactive_status' is not set or 'false' > alarm
+                   if [[ ${IGNORE_INACTIVE_STATUS} == "false" || ${IGNORE_INACTIVE_STATUS} == "" ]]
+                   then
+                       SEND=1
+                   fi
                    TEXT="_active > false."
                fi
                __sendFunc
@@ -232,7 +238,11 @@ function nodeStatusFunc() {
                __sendFunc
            fi
 
-           __getSignedAndMissedBlocksFunc
+           # if 'ignore_inactive_status' is not set or 'false' > skip block miss-sign check
+           if [[ ${IGNORE_INACTIVE_STATUS} == "false" || ${IGNORE_INACTIVE_STATUS} == "" ]]
+           then
+               __getSignedAndMissedBlocksFunc
+           fi
            __getUnvotedProposalsFunc
 
        fi
