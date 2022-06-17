@@ -27,12 +27,3 @@ CONFIG="/root/.pylons/config/"
 
 # link to explorer API, go to curl.md and find the link for your case
 CURL="https://pylons.api.explorers.guru/api/blocks?count=1"
-
-# chat id for alarm messages with notification enabled
-CHAT_ID_ALARM="-187"
-
-# chat id for log messages
-CHAT_ID_STATUS="-1703"
-
-# bot token for send messages
-BOT_TOKEN="228322:xxx-xxx_xxx"
