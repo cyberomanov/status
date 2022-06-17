@@ -8,10 +8,12 @@ Instruction:
 3. Connect to your server and create `status` folder in the `$HOME directory` with `mkdir $HOME/status/`.
 4. In this folder you have to create `cosmos.sh` file with `nano $HOME/status/cosmos.sh`. You don't have to do any edits on `cosmos.sh` file, it's ready to use.
 > You can find `cosmos.sh` in this repository.
-5. Also you have to create as many `cosmos.conf` files with `nano $HOME/status/cosmos.conf`, as many nodes you have on the current server. Customize your config files.
-> You can find `cosmos.conf.example` and `curl.md` in this repository.
-6. Install `jq` and `bc` packages with `sudo apt-get install jq bc -y`.
-7. Run `bash cosmos.sh` to check your settings. Normal output:
+5. In this folder you have to create `cosmos.conf` file with `nano $HOME/status/cosmos.sh`. Customize it.
+> You can find `cosmos.conf` in this repository.
+6. Also you have to create as many `NAME.conf` files with `nano $HOME/status/NAME.conf`, as many nodes you have on the current server. Customize your config files.
+> You can find `pylons.conf.example` and `curl.md` in this repository.
+7. Install `jq` and `bc` packages with `sudo apt-get install jq bc -y`.
+8. Run `bash cosmos.sh` to check your settings. Normal output:
 
 ```
 root@v1131623:~/status# bash cosmos.sh 
@@ -34,9 +36,9 @@ stake >> 118.12 fis.
 root@v1131623:~/status# 
 ```
 
-8. Create `slash.sh` with `nano $HOME/status/slash.sh`, if you don't have one yet. This bash script will divide group of messages.
+9. Create `slash.sh` with `nano $HOME/status/slash.sh`, if you don't have one yet. This bash script will divide group of messages.
 > You can find `slash.sh.example` in this repository.
-9. Add some rules with `chmod u+x cosmos.sh slash.sh`.
-10. Edit crontab with `crontab -e`.
+10. Add some rules with `chmod u+x cosmos.sh slash.sh`.
+11. Edit crontab with `crontab -e`.
 > You can find `crontab.example` in this repository.
-11. Check your logs with `cat $HOME/status/cosmos.log` or `tail $HOME/status/cosmos.log -f`.
+12. Check your logs with `cat $HOME/status/cosmos.log` or `tail $HOME/status/cosmos.log -f`.
