@@ -11,6 +11,7 @@ beezee-m | CURL="https://rest.getbze.com/bank/total/ubze" |
 vidulum-m | CURL="https://mainnet-lcd.vidulum.app/bank/total/uvdl" |
 chromic-m | CURL="https://chtd-api.skynetvalidators.com/bank/total/ucht" |
 dig-m | CURL="https://api-1-dig.notional.ventures/bank/total/udig" |
+konstellation-m | CURL="https://api-konstellation.cosmostation.io/v1/status" |
  | |
 kyve-t | CURL="https://api.explorer.kyve.network/bank/total/tkyve" |
 stafi-t | CURL="https://test-rest-rpc1.stafihub.io/bank/total/ufis" |
