@@ -8,7 +8,7 @@ Instruction:
 3. Connect to your server and create `status` folder in the `$HOME directory` with `mkdir $HOME/status/`.
 4. In this folder you have to create `cosmos.sh` file with `nano $HOME/status/cosmos.sh`. You don't have to do any edits on `cosmos.sh` file, it's ready to use.
 > You can find `cosmos.sh` in this repository.
-5. In this folder you have to create `cosmos.conf` file with `nano $HOME/status/cosmos.sh`. Customize it.
+5. In this folder you have to create `cosmos.conf` file with `nano $HOME/status/cosmos.conf`. Customize it.
 > You can find `cosmos.conf` in this repository.
 6. Also you have to create as many `NAME.conf` files with `nano $HOME/status/NAME.conf`, as many nodes you have on the current server. Customize your config files.
 > You can find `pylons.conf.example` and `curl.md` in this repository.
