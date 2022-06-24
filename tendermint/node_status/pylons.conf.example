@@ -13,7 +13,7 @@ PROJECT="pylons-testnet"
 # example: if max set of active validators is 200, you'll get an alarm when your validator is 191st, set 0 to disable
 POSITION_ALARM="10"
 
-# set alarm if validator is inactive: "true" - send, "false" - do not send
+# send alarm if validator has inactive status: "false" - send alarm, "true" - do not send (ignore inactive status)
 IGNORE_INACTIVE_STATUS="false"
 
 # token name
