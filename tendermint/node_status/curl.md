@@ -19,6 +19,7 @@ stafi-t | CURL="https://test-rest-rpc1.stafihub.io/bank/total/ufis" |
 pylons-t | CURL="https://pylons.api.explorers.guru/api/blocks/latest" |
 dws-t | CURL="https://dws.api.explorers.guru/api/blocks/latest" |
 quicksilver-t | CURL="https://quicksilver.api.explorers.guru/api/blocks/latest" |
+kqcosmos-t | CURL="https://api-3.quick.testnet.run/bank/total/uatom" |
 defund-t | CURL="https://defund.api.explorers.guru/api/blocks/latest" |
 sei-t | CURL="https://sei.api.explorers.guru/api/blocks/latest" |
 celestia-t | CURL="https://celestia.api.explorers.guru/api/blocks/latest" |
