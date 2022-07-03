@@ -12,7 +12,7 @@ Instruction:
 > You can find `cosmos.conf` in this repository.
 6. Also you have to create as many `NAME.conf` files with `nano $HOME/status/NAME.conf`, as many nodes you have on the current server. Customize your config files.
 > You can find `pylons.conf.example` and `curl.md` in this repository.
-7. Install `jq` and `bc` packages with `sudo apt-get install jq bc -y`.
+7. Install some packages with `sudo apt-get install jq sysstat bc -y`.
 8. Run `bash cosmos.sh` to check your settings. Normal output:
 
 ```
