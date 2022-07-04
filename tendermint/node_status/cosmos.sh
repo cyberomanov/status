@@ -364,7 +364,7 @@ function __NodeStatus() {
 
 function Main() {
     # init some variables
-    MESSAGE_LOG=""; SEND_LOAD=""; MINUTE=59
+    MESSAGE_LOG=""; SEND_LOAD=""; MINUTE=10
 
     # print the current time
     echo -e " "; echo -e "/// $(date '+%F %T') ///"; echo -e " "
