@@ -20,7 +20,7 @@ function __CPULoad() {
     . cosmos.conf
 
     # get CPU load
-    CPU=$(echo "scale=2; 100-$(mpstat | tail -1 | awk 'NF {print $NF}')" | bc)
+    CPU=$(printf "%.0f" $(echo "scale=2; 100-$(mpstat | tail -1 | awk 'NF {print $NF}')" | bc))
     if (( $(echo "${CPU} > ${CPU_ALARM}" | bc -l) )); then
         SEND=1
         TEXT="_cpu >>>> ${CPU}%."
@@ -33,7 +33,7 @@ function __CPULoad() {
     free -g > ~/temp.txt
     RAM_TOTAL=$(cat ~/temp.txt | awk '{print $2}' | awk 'NR==2 {print; exit}')"G"
     RAM_USED=$(cat ~/temp.txt | awk '{print $3}' | awk 'NR==2 {print; exit}')"G"
-    RAM_PERC=$(echo "scale=2; $RAM_USED/$RAM_TOTAL*100" | bc | grep -oE "[0-9]*" | awk 'NR==1 {print; exit}')
+    RAM_PERC=$(printf "%.0f" $(echo "scale=2; $RAM_USED/$RAM_TOTAL*100" | bc | grep -oE "[0-9]*" | awk 'NR==1 {print; exit}'))
     if (( $(echo "${RAM_PERC} > ${RAM_ALARM}" | bc -l) )); then
         SEND=1
         TEXT="_ram >>>> ${RAM_PERC}%."
@@ -45,23 +45,23 @@ function __CPULoad() {
     # get SWAP load
     SWAP_TOTAL=$(cat ~/temp.txt | grep "Swap" | awk '{print $2}')"G"
     SWAP_USED=$(cat ~/temp.txt | grep "Swap" | awk '{print $3}')"G"
-    SWAP_PERC=$(echo "scale=2; $SWAP_USED/$SWAP_TOTAL*100" | bc | grep -oE "[0-9]*" | awk 'NR==1 {print; exit}')"%"
+    SWAP_PERC=$(printf "%.0f" $(echo "scale=2; $SWAP_USED/$SWAP_TOTAL*100" | bc | grep -oE "[0-9]*" | awk 'NR==1 {print; exit}'))
 
     if [[ ${SWAP_TOTAL} != "0G" && ${SWAP_TOTAL} != "G" && ${SWAP_USED} != "0G" && ${SWAP_USED} != "G" ]]; then
-        TEXT="swap >>>> $SWAP_USED/$SWAP_TOTAL ~ $SWAP_PERC."
+        TEXT="swap >>>> $SWAP_PERC%."
         __Send
     fi
 
     # get disk load
     df -h / > ~/temp.txt
-    DISK_TOTAL=$(cat ~/temp.txt | awk '{print $2}' | awk 'NR==2 {print; exit}')
-    DISK_USED=$(cat ~/temp.txt | awk '{print $3}' | awk 'NR==2 {print; exit}')
-    DISK_PERC=$(cat ~/temp.txt | awk '{print $5}' | awk 'NR==2 {print; exit}' | tr -d '%')
+    # DISK_TOTAL=$(cat ~/temp.txt | awk '{print $2}' | awk 'NR==2 {print; exit}')
+    # DISK_USED=$(cat ~/temp.txt | awk '{print $3}' | awk 'NR==2 {print; exit}')
+    DISK_PERC=$(printf "%.0f" $(cat ~/temp.txt | awk '{print $5}' | awk 'NR==2 {print; exit}' | tr -d '%'))
     if (( $(echo "${DISK_PERC} > ${PARTITION_ALARM}" | bc -l) )); then
         SEND=1
-        TEXT="_part >>> ${DISK_USED}/${DISK_TOTAL} ~ ${DISK_PERC}%."
+        TEXT="_part >>> ${DISK_PERC}%."
     else
-        TEXT="part >>>> ${DISK_USED}/${DISK_TOTAL} ~ ${DISK_PERC}%."
+        TEXT="part >>>> ${DISK_PERC}%."
     fi
     __Send
 
@@ -76,7 +76,7 @@ function __CPULoad() {
     if [[ ${SEND} == "1" ]]; then
         curl --header 'Content-Type: application/json' \
         --request 'POST' \
-        --data '{"chat_id":"'"$CHAT_ID_ALARM"'", "text":"'"$(echo -e $MESSAGE)"'", "parse_mode": "html"}' "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
+        --data '{"chat_id":"'"${CHAT_ID_ALARM}"'", "text":"'"$(echo -e ${MESSAGE})"'", "parse_mode": "html"}' "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
         > /dev/null 2>&1
     elif (( $(echo "$(date +%M) < ${MINUTE}" | bc -l) )); then
          # write message text into 'message_log' variable to send all logs via one message
@@ -157,7 +157,7 @@ function __SignedAndMissedBlocks() {
 function __UnvotedProposals() {
 
     # get proposals
-    PROPOSALS=$(${COSMOS} q gov proposals --node ${NODE} --output json 2>&1)
+    PROPOSALS=$(${COSMOS} q gov proposals --node ${NODE} --limit 999999999 --output json 2>&1)
 
     # if at least one proposal exists
     if [[ ${PROPOSALS} != *"no proposals found"* ]]; then
@@ -185,10 +185,10 @@ function __UnvotedProposals() {
                     if (( ${i} < ${#UNVOTED_ARRAY[@]}-1 )); then TEXT=${TEXT}','; else TEXT=${TEXT}'.'; fi
                 done
                 __Send
-        else
-            :
-            # TEXT="gov >>>>> no unvoted proposals."
-        fi
+            else
+                :
+                # TEXT="gov >>>>> no unvoted proposals."
+            fi
     else
         :
         # TEXT="gov >>>>> no any proposals."
@@ -275,8 +275,8 @@ function __NodeStatus() {
 
         # if 'CURL' was not set > no compare with explorer height
         if [[ $CURL != "" ]] && [[ $LATEST_CHAIN_BLOCK != "" ]] && [[ $LATEST_CHAIN_BLOCK != "0" ]] && [[ $LATEST_CHAIN_BLOCK != "null" ]]; then
-            # if we are in the past more than 10 block > alarm
-            if ((${LATEST_CHAIN_BLOCK}-10 > ${LATEST_NODE_BLOCK})); then
+            # if we are in the past more than 100 block > alarm
+            if ((${LATEST_CHAIN_BLOCK}-100 > ${LATEST_NODE_BLOCK})); then
                 SEND=1
                 TEXT="_exp/me > ${LATEST_CHAIN_BLOCK}/${LATEST_NODE_BLOCK}."
             else
@@ -354,7 +354,7 @@ function __NodeStatus() {
     if [[ ${SEND} == "1" ]]; then
         curl --header 'Content-Type: application/json' \
         --request 'POST' \
-        --data '{"chat_id":"'"$CHAT_ID_ALARM"'", "text":"'"$(echo -e $MESSAGE)"'", "parse_mode": "html"}' "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
+        --data '{"chat_id":"'"${CHAT_ID_ALARM}"'", "text":"'"$(echo -e ${MESSAGE})"'", "parse_mode": "html"}' "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
         > /dev/null 2>&1
     elif (( $(echo "$(date +%M) < ${MINUTE}" | bc -l) )); then
         # write message text into 'message_log' variable to send all logs via one message
