@@ -16,22 +16,22 @@ Instruction:
 8. Run `bash cosmos.sh` to check your settings. Normal output:
 
 ```
-root@v1131623:~/status# bash cosmos.sh 
+root@v1131623:~/status# bash cosmos.sh
  
-/// 2022-05-21 14:16:44 ///
+/// 2022-07-09 11:42:37 ///
  
-pylons-testnet-3
+testnets  |  load
 
-sync >>> 373010/373010.
-jailed > true.
+cpu >>>>> 68%.
+ram >>>>> 47%.
+part >>>> 55%.
+load >>>> 14.03.
  
-/// 2022-05-21 14:16:48 ///
- 
-stafihub-public-testnet-2
+dws-t  |  cyberomanov
 
-sync >>> 512287/512287.
-place >> 47/100.
-stake >> 118.12 fis.
+exp/me >> 955540/955540.
+place >>> 88/200.
+stake >>> 34.98 dws.
 
 root@v1131623:~/status# 
 ```
