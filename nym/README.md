@@ -18,12 +18,11 @@ root@ubuntu:~/status# bash nym.sh
  
 /// 2022-05-21 20:07:32 ///
  
-nym | cyberomanov
+nym-m  |  cyberomanov
 
-stake >>>>> 24986.90 nym.
-uptime >>>> 100%/h, 99%/d.
-estimated > 0.0179 nym per hour.
-rewards >>> 19.10 nym.
+stake >>>>> 127314.73 | $50473.92.
+salary/m >>    367.20 | $145.58.
+unpaid >>>>     77.26 | $30.63.
 
 root@ubuntu:~/status# 
 ```
