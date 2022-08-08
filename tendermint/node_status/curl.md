@@ -8,6 +8,7 @@ evmos-m | CURL="https://api-evmos.cosmostation.io/v1/status" |
 galaxy-m | CURL="https://galaxy.postcapitalist.io/bank/total/uglx" |
 meme-m | CURL="https://api-meme-1.meme.sx/bank/total/umeme" |
 beezee-m | CURL="https://rest.getbze.com/bank/total/ubze" |
+desmos-m | CURL="https://api-desmos.cosmostation.io/v1/status" |
 vidulum-m | CURL="https://mainnet-lcd.vidulum.app/bank/total/uvdl" |
 chromic-m | CURL="https://chtd-api.skynetvalidators.com/bank/total/ucht" |
 dig-m | CURL="https://api-1-dig.notional.ventures/bank/total/udig" |
