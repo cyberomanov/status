@@ -6,9 +6,9 @@ Instruction:
 1. Create telegram bot via `@BotFather`, customize it and `get bot API token` ([how_to](https://www.siteguarding.com/en/how-to-get-telegram-bot-api-token)).
 2. Create at least 2 groups: `alarm` and `log`. Customize them, add your bot into your chats and `get chats IDs` ([how_to](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id)).
 3. Connect to your server and create `status` folder in the `$HOME directory` with `mkdir $HOME/status/`.
-4. In this folder you have to create `cosmos.sh` file with `nano $HOME/status/cosmos.sh`. You don't have to do any edits on `cosmos.sh` file, it's ready to use.
+4. In this folder, `$HOME/status/`, you have to create `cosmos.sh` file with `nano $HOME/status/cosmos.sh`. You don't have to do any edits on `cosmos.sh` file, it's ready to use.
 > You can find `cosmos.sh` in this repository.
-5. In this folder, `$HOME/status/` you have to create `cosmos.conf` file with `nano $HOME/status/cosmos.conf`. Customize it.
+5. In this folder, `$HOME/status/`, you have to create `cosmos.conf` file with `nano $HOME/status/cosmos.conf`. Customize it.
 > You can find `cosmos.conf` in this repository.
 6. Also you have to create as many `NAME.conf` files with `nano $HOME/status/NAME.conf`, as many nodes you have on the current server. Customize your config files.
 > You can find `pylons.conf` and `curl.md` in this repository.
