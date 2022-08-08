@@ -1,19 +1,22 @@
-# validator moniker
+# validator's moniker
 MONIKER="cyberomanov"
 
-# delegator
+# delegator address
 DELEGATOR_ADDRESS="pylo1upvcsamhmf8r3c8sdhcftk3mz2jxvfm8lf09wg"
 
-# valoper
+# valoper address
 VALIDATOR_ADDRESS="pylovaloper1upvcsamhmf8r3c8sdhcftk3mz2jxvfm86pzj4y"
 
-# project name for log
-PROJECT="pylons-testnet"
+# project name for log and alarm messages
+PROJECT="pylons-t"
 
-# example: if max set of active validators is 200, you'll get an alarm when your validator is 191st, set 0 to disable
+# example: if max set of active validators is 200, you'll get an alarm when your validator is 191st
+# set 0 to disable
 POSITION_ALARM="10"
 
-# send alarm if validator has inactive status: "false" - send alarm, "true" - do not send
+# ignore or not to ignore when validator has inactive status
+# IGNORE_INACTIVE_STATUS="false" will send an alarm when validator is inactive
+# IGNORE_INACTIVE_STATUS="true" will not send an alarm when validator is inactive
 IGNORE_INACTIVE_STATUS="false"
 
 # token name
@@ -22,11 +25,21 @@ TOKEN="bedrock"
 # count of nulls
 DENOM="1000000"
 
-# path to bin
+# full path to bin
 COSMOS="/root/go/bin/pylonsd"
 
-# path to config folder
+# full path to config folder
 CONFIG="/root/.pylons/config/"
 
-# link to explorer API, go to curl.md and find the link for your case
+# link to explorer API
+# go to curl.md and find the link for your case
 CURL="https://pylons.api.explorers.guru/api/blocks?count=1"
+
+# chat_id for alarm messages with enabled notifications
+CHAT_ID_ALARM="-187"
+
+# chat_id for log messages
+CHAT_ID_STATUS="-1703"
+
+# bot_token for sending messages
+BOT_TOKEN="228322:xxx-xxx_xxx"
