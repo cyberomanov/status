@@ -473,7 +473,7 @@ function Main() {
     # init some variables
     MESSAGE_LOG=""
     SEND_LOAD=""
-    MINUTE=59
+    MINUTE=10
     TIMEZONE="Africa/Abidjan"
     __PreMessage
 
