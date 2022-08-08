@@ -2,6 +2,7 @@
 --- | --- |
 gravity-bridge-m | CURL="https://api-gravity-bridge.cosmostation.io/v1/status" |
 sifchain-m | CURL="https://api-sifchain.cosmostation.io/v1/status" |
+desmos-m | CURL="https://api-sifchain.cosmostation.io/v1/status" |
 omniflix-m | CURL="https://api-omniflix.cosmostation.io/v1/status" |
 provenance-m | CURL="https://api-provenance.cosmostation.io/v1/status" |
 evmos-m | CURL="https://api-evmos.cosmostation.io/v1/status" |
