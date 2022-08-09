@@ -540,7 +540,7 @@ function Main() {
     done
 
     # delete temp log files
-    rm ./-?[0-9]*
+    rm ./-?[0-9]* > /dev/null 2>&1
 }
 
 # run 'main'
