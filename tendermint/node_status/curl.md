@@ -14,6 +14,8 @@ chromic-m | CURL="https://chtd-api.skynetvalidators.com/bank/total/ucht" |
 dig-m | CURL="https://api-1-dig.notional.ventures/bank/total/udig" |
 konstellation-m | CURL="https://api-konstellation.cosmostation.io/v1/status" |
 mises-m | CURL="https://rpc.gw.mises.site/block?latest" |
+idep-m | CURL="https://rpc.idep.sgtstake.com/block?latest" |
+bitsong-m | CURL="https://rpc.bitsong.forbole.com/block?latest" |
  | |
 kyve-t | CURL="https://api.explorer.kyve.network/bank/total/tkyve" |
 stafi-t | CURL="https://test-rest-rpc1.stafihub.io/bank/total/ufis" |
