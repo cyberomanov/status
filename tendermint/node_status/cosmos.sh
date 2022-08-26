@@ -13,31 +13,90 @@ function __Send() {
 function __PreMessage() {
 
     # init some premessages
-    CPU_T="cpu_used >>>"
-    RAM_T="ram_used >>>"
-    SWAP_T="swap_used >>"
-    PART_T="part_used >>"
-    LOAD_T="serv_load >>"
+    CPU_T="cpu_used >>>>"
+    RAM_T="ram_used >>>>"
+    SWAP_T="swap_used >>>"
+    PART_T="part_used >>>"
+    LOAD_T="serv_load >>>"
+    DISK_SPARE_T="disk_spare >>"
+    DISK_USED_T="disk_used >>>"
 
-    MISSED_T="missed >>>>>"
-    TRAIN_T="train >>>>>>"
-    JAILED_A="_jailed >>>>"
+    MISSED_T="missed >>>>>>"
+    TRAIN_T="train >>>>>>>"
+    JAILED_A="_jailed >>>>>"
 
-    GOV_T="gov >>>>>>>>"
+    GOV_T="gov >>>>>>>>>"
 
-    UPGRADE_T="upgrade >>>>"
-    TIME_L_T="_time_left >"
-    APPR_T_T="_appr_time >"
+    UPGRADE_T="upgrade >>>>>"
+    TIME_L_T="_time_left >>"
+    APPR_T_T="_appr_time >>"
 
-    EXP_ME_T="exp/me >>>>>"
-    ACTIVE_A="_active >>>>"
-    PLACE_T="place >>>>>>"
-    STAKE_T="stake >>>>>>"
+    EXP_ME_T="exp/me >>>>>>"
+    ACTIVE_A="_active >>>>>"
+    PLACE_T="place >>>>>>>"
+    STAKE_T="stake >>>>>>>"
 
-    PRIVKEY_T="priv_key >>>"
+    PRIVKEY_T="priv_key >>>>"
 }
 
-function __CPULoad() {
+function __Send() {
+
+    # print 'TEXT' into 'cosmos.log' for the sake of history
+    echo -e ${TEXT}
+
+    # add new text to the 'MESSAGE', which will be sent as 'log_message' or 'alarm_message'
+    # if 'SEND' == 1, it becomes 'alarm_message', otherwise it's 'log_message'
+    MESSAGE=${MESSAGE}'<code>'${TEXT}'</code>\n'
+}
+
+function __DiskVitality() {
+
+    # init some variables
+    KEY=0
+
+    # trying to install 'smartmontools'
+    if [[ $(/usr/sbin/smartctl -V 2>&1) == *"not found"* || $(/usr/sbin/fdisk -v 2>&1) == *"not found"* ]]; then
+        apt-get install smartmontools fdisk -y > /dev/null 2>&1
+    fi
+
+    # if successfuly installed > check disk
+    if [[ $(/usr/sbin/smartctl -V 2>&1) != *"not found"* || $(/usr/sbin/fdisk -v 2>&1) != *"not found"* ]]; then
+        DISK_NAME_STRING=$(/usr/sbin/fdisk -l | grep -e "Disk /dev/*" | grep -oE "/dev/[[:alnum:]]*")
+        DISK_NAME_ARRAY=($(echo "${DISK_NAME_STRING}" | tr ' ' '\n'))
+        for i in "${!DISK_NAME_ARRAY[@]}"; do
+            DISK_INFO=$(/usr/sbin/smartctl -s on -a ${DISK_NAME_ARRAY[i]})
+            if [[ ${DISK_INFO} != *"Unable to detect device"* ]]; then
+                KEY=1
+                DISK_NAME=$(echo ${DISK_NAME_ARRAY[i]})
+                SPARE=$(echo ${DISK_INFO} | grep -o "Available Spare: [0-9]*" | grep -o "[0-9]*")
+                SPARE_THRESHOLD=$(echo ${DISK_INFO} | grep -o "Available Spare Threshold: [0-9]*" | grep -o "[0-9]*")
+                PERCENTAGE_USED=$(echo ${DISK_INFO} | grep -o "Percentage Used: [0-9]*" | grep -o "[0-9]*")
+
+                if [[ $(echo "${SPARE} < ${SPARE_THRESHOLD}" | bc) -eq 1 ]]; then
+                    SEND=1
+                    CPU_LOAD_MESSAGE=${CPU_LOAD_MESSAGE}"\n_${DISK_SPARE_T::-1} ${DISK_NAME:5} has only ${SPARE}% spare."
+                else
+                    CPU_LOAD_MESSAGE=${CPU_LOAD_MESSAGE}"\n${DISK_SPARE_T} ${DISK_NAME:5} has ${SPARE}% spare."
+                fi
+
+                if [[ $(echo "${PERCENTAGE_USED} > ${DISK_PERCENTAGE_USED_ALARM}" | bc) -eq 1 ]]; then
+                    SEND=1
+                    CPU_LOAD_MESSAGE=${CPU_LOAD_MESSAGE}"\n_${DISK_USED_T::-1} ${DISK_NAME:5} has ${PERCENTAGE_USED}% used."
+                else
+                    CPU_LOAD_MESSAGE=${CPU_LOAD_MESSAGE}"\n${DISK_USED_T} ${DISK_NAME:5} has ${PERCENTAGE_USED}% used."
+                fi
+            fi
+        done
+
+        if [[ ${KEY} == 0 ]]; then
+            CPU_LOAD_MESSAGE=${CPU_LOAD_MESSAGE}"\nthere is no disk which can be tested."
+        fi
+    else
+        CPU_LOAD_MESSAGE=${CPU_LOAD_MESSAGE}"\ninstall tools manually: 'apt-get install smartmontools fdisk -y'."
+    fi
+}
+
+function __ServerLoad() {
 
     # add new text to the 'MESSAGE', which will be sent as 'log_message' or 'alarm_message'
     MESSAGE="<b>${SERVER} ⠀|⠀ load</b>\n\n"
@@ -68,6 +127,7 @@ function __CPULoad() {
     RAM_TOTAL=$(cat ~/temp.txt | awk '{print $2}' | awk 'NR==2 {print; exit}')"G"
     RAM_USED=$(cat ~/temp.txt | awk '{print $3}' | awk 'NR==2 {print; exit}')"G"
     RAM_PERC=$(printf "%.0f" $(echo "scale=2; ${RAM_USED}/${RAM_TOTAL}*100" | bc | grep -oE "[0-9]*" | awk 'NR==1 {print; exit}'))
+    RAM_PERC=95
     if (( $(echo "${RAM_PERC} > ${RAM_ALARM}" | bc -l) )); then
         SEND=1
         CPU_LOAD_MESSAGE=${CPU_LOAD_MESSAGE}"_${RAM_T::-1} ${RAM_PERC}%.\n"
@@ -95,7 +155,9 @@ function __CPULoad() {
 
     # get system load
     SYSTEM_LOAD=$(cat /proc/loadavg | awk '{print $2}')
-    CPU_LOAD_MESSAGE=${CPU_LOAD_MESSAGE}"${LOAD_T} ${SYSTEM_LOAD}."
+    CPU_LOAD_MESSAGE=${CPU_LOAD_MESSAGE}"${LOAD_T} ${SYSTEM_LOAD}.\n"
+
+    __DiskVitality
 
     # delete the temp file
     rm ~/temp.txt
@@ -104,6 +166,7 @@ function __CPULoad() {
     if [[ ${SEND} == "1" ]]; then
         TEXT=${CPU_LOAD_MESSAGE}
         __Send
+
         curl --header 'Content-Type: application/json' \
         --request 'POST' \
         --data '{"chat_id":"'"${CHAT_ID_ALARM}"'", "text":"'"$(echo -e "${MESSAGE}")"'", "parse_mode": "html"}' "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
@@ -213,7 +276,6 @@ function __SignedAndMissedBlocks() {
     else
         echo "${MISSED_T} ${MISSED} blocks."
     fi
-    
 }
 
 function __UnvotedProposals() {
@@ -347,7 +409,7 @@ function __NodeStatus() {
     INACTIVE=""
     SEND=0
 
-    # get some info about node    
+    # get some info about node
     NODE_STATUS=$(timeout 5s ${COSMOS} status 2>&1 --node ${NODE} --home ${NODE_HOME})
 
     # if 'NODE_STATUS' response contains 'connection refused' > instant alarm
@@ -395,7 +457,6 @@ function __NodeStatus() {
                     __Send
                 fi
             fi
-            
 
             # get validator info
             VALIDATOR_INFO=$(${COSMOS} query staking validator ${VALIDATOR_ADDRESS} --node ${NODE} --output json --home ${NODE_HOME})
@@ -414,7 +475,7 @@ function __NodeStatus() {
                     else
                         SEND=1
                         TEXT="${JAILED_A} ${JAILED_STATUS}."
-                    fi                    
+                    fi
                 else
                     # if 'ignore_inactive_status' is not set or 'false' > alarm
                     if [[ ${IGNORE_INACTIVE_STATUS} != "true" ]]; then SEND=1; fi
@@ -514,6 +575,7 @@ function Main() {
     SEND_LOAD=""
     MINUTE=10
     TIMEZONE="Africa/Abidjan"
+    DISK_PERCENTAGE_USED_ALARM=100
     __PreMessage
 
     # print the current time
@@ -523,8 +585,8 @@ function Main() {
     cd $HOME/status/ && . ./cosmos.conf
     export TZ=${TIMEZONE}
 
-    # get CPULoad info
-    __CPULoad
+    # get ServerLoad info
+    __ServerLoad
 
     # run 'NodeStatus' with every '*.conf' file in the 'status' folder
     for CONF in *.conf; do
