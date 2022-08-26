@@ -10,11 +10,10 @@ Instruction:
 > You can find `cosmos.sh` in this repository.
 5. In this folder, `$HOME/status/`, you have to create `cosmos.conf` file with `nano $HOME/status/cosmos.conf`. Customize it.
 > You can find `cosmos.conf` in this repository.
-6. Also you have to create as many `NAME.conf` files with `nano $HOME/status/NAME.conf`, as many nodes you have on the current server. Customize your config files.
-> You can find `pylons.conf` and `curl.md` in this repository.
-7. Install some packages with `sudo apt-get install jq sysstat bc -y`.
+6. Also you have to create as many `name.conf` files with `nano $HOME/status/name.conf`, as many nodes you have on the current server. Customize your config files. For ex: I have agoric, gravity and sifchain on the same server, so I have to create 3 files: `agoric.conf`, `gravity.conf` and `sifchain.conf`.
+> You can find `name.conf` and `curl.md` in this repository.
+7. Install some packages with `sudo apt-get install jq sysstat bc smartmontools fdisk -y`.
 8. Run `bash cosmos.sh` to check your settings. Normal output:
-
 ```
 root@v1131623:~/status# bash cosmos.sh
  
@@ -33,9 +32,8 @@ exp/me >> 955540/955540.
 place >>> 88/200.
 stake >>> 34.98 dws.
 
-root@v1131623:~/status# 
+root@v1131623:~/status#
 ```
-
 9. Add some rules with `chmod u+x $HOME/status/cosmos.sh`.
 10. Edit crontab with `crontab -e`.
 > You can find `crontab` in this repository.
