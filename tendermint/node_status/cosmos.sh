@@ -117,7 +117,6 @@ function __ServerLoad() {
     RAM_TOTAL=$(cat ~/temp.txt | awk '{print $2}' | awk 'NR==2 {print; exit}')"G"
     RAM_USED=$(cat ~/temp.txt | awk '{print $3}' | awk 'NR==2 {print; exit}')"G"
     RAM_PERC=$(printf "%.0f" $(echo "scale=2; ${RAM_USED}/${RAM_TOTAL}*100" | bc | grep -oE "[0-9]*" | awk 'NR==1 {print; exit}'))
-    RAM_PERC=95
     if (( $(echo "${RAM_PERC} > ${RAM_ALARM}" | bc -l) )); then
         SEND=1
         CPU_LOAD_MESSAGE=${CPU_LOAD_MESSAGE}"_${RAM_T::-1} ${RAM_PERC}%.\n"
