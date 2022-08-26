@@ -39,16 +39,6 @@ function __PreMessage() {
     PRIVKEY_T="priv_key >>>>"
 }
 
-function __Send() {
-
-    # print 'TEXT' into 'cosmos.log' for the sake of history
-    echo -e ${TEXT}
-
-    # add new text to the 'MESSAGE', which will be sent as 'log_message' or 'alarm_message'
-    # if 'SEND' == 1, it becomes 'alarm_message', otherwise it's 'log_message'
-    MESSAGE=${MESSAGE}'<code>'${TEXT}'</code>\n'
-}
-
 function __DiskVitality() {
 
     # init some variables
