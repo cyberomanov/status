@@ -35,6 +35,7 @@ clan-t | CURL="https://api.clan.testnet.run/bank/total/uclan" |
 kujira-t | CURL="https://kujira-testnet.synergynodes.com/bank/total/ukuji" |
 crowd-t | CURL="https://crowd-api.theamsolutions.info/bank/total" |
 haqq-t | CURL="https://haqq.api.explorers.guru/api/blocks/latest" |
+teritori-t | CURL="https://teritori.api.explorers.guru/api/blocks/latest" |
 
 If you want to add your custom CURL into script, you have to open the needed explorer, open `Inspect` with your mouse's right click, open `Network` tab and find a request with `v1/status`, `bank/total` or `blocks/latest` words in the request link. 
 
