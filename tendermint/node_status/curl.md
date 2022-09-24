@@ -19,6 +19,7 @@ bitsong-m | CURL="https://rpc.bitsong.forbole.com/block?latest" |
 canto-m | CURL="https://canto-api.polkachu.com/blocks/latest" |
 umee-m | CURL="https://umee.api.explorers.guru/api/blocks/latest" |
 genesisl1-m | CURL="https://api.genesisl1.org/bank/total" |
+persistence-m | CURL="https://rest.core.persistence.one/blocks/latest" |
  | |
 kyve-t | CURL="https://api.explorer.kyve.network/bank/total/tkyve" |
 stafi-t | CURL="https://test-rest-rpc1.stafihub.io/bank/total/ufis" |
