@@ -270,7 +270,7 @@ function __SignedAndMissedBlocks() {
 function __UnvotedProposals() {
 
     # get proposals
-    PROPOSALS=$(${COSMOS} q gov proposals --node ${NODE} --limit 999999999 --output json 2>&1)
+    PROPOSALS=$(${COSMOS} q gov proposals --node ${NODE} --home ${NODE_HOME} --limit 999999999 --output json 2>&1)
 
     # if at least one proposal exists
     if [[ ${PROPOSALS} != *"no proposals found"* ]]; then
@@ -284,7 +284,7 @@ function __UnvotedProposals() {
         # run loop on each proposal
         for i in "${!ACTIVE_PROPOSALS_ARRAY[@]}"; do
             # if vote does not exist, add proposal id to 'UNVOTED_ARRAY'
-            VOTE=$(${COSMOS} q gov votes ${ACTIVE_PROPOSALS_ARRAY[i]} --limit 999999999 --node ${NODE} --output json | jq '.votes[].voter' | tr -d '"' | grep ${DELEGATOR_ADDRESS})
+            VOTE=$(${COSMOS} q gov votes ${ACTIVE_PROPOSALS_ARRAY[i]} --limit 999999999 --node ${NODE} --home ${NODE_HOME} --output json | jq '.votes[].voter' | tr -d '"' | grep ${DELEGATOR_ADDRESS})
             if [[ ${VOTE} == "" ]]; then UNVOTED_ARRAY+=(${ACTIVE_PROPOSALS_ARRAY[i]}); fi
         done
 
@@ -322,7 +322,7 @@ function __AverageBlockExecutionTime() {
 
     # get upgrade block time and height
     UPGRADE_BLOCK_HEIGHT=$((${LATEST_BLOCK_HEIGHT}-${LOOKBEHIND_BLOCKS}))
-    UPGRADE_BLOCK_TIME=$(${COSMOS} q block ${UPGRADE_BLOCK_HEIGHT} --node ${NODE} | jq ".block.header.time" | tr -d '"' | grep -oE "[0-9]*:[0-9]*:[0-9]*")
+    UPGRADE_BLOCK_TIME=$(${COSMOS} q block ${UPGRADE_BLOCK_HEIGHT} --node ${NODE} --home ${NODE_HOME} | jq ".block.header.time" | tr -d '"' | grep -oE "[0-9]*:[0-9]*:[0-9]*")
     IFS=':' read -ra HMS <<< "${UPGRADE_BLOCK_TIME}"
     UPGRADE_BLOCK_TIME_IN_SEC=$(echo ${HMS[0]}*3600+${HMS[1]}*60+${HMS[2]} | bc -l)
 
@@ -352,7 +352,7 @@ function __UpgradePlan() {
     . ./cosmos.conf
 
     # get some info about chain upgrade plan
-    UPGRADE_PLAN=$(${COSMOS} q upgrade plan --node ${NODE} --output json 2>&1)
+    UPGRADE_PLAN=$(${COSMOS} q upgrade plan --node ${NODE} --home ${NODE_HOME} --output json 2>&1)
 
     # if smth is planned, then calculate approximate upgrade time
     if [[ ${UPGRADE_PLAN} != *"no upgrade scheduled"* ]]; then
