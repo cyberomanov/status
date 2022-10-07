@@ -21,6 +21,7 @@ umee-m | CURL="https://umee.api.explorers.guru/api/blocks/latest" |
 genesisl1-m | CURL="https://api.genesisl1.org/bank/total" |
 persistence-m | CURL="https://rest.core.persistence.one/blocks/latest" |
 stride-m | CURL="https://stride.api.explorers.guru/api/blocks/latest" |
+assetmantle-m | CURL="https://assetmantle.api.explorers.guru/api/blocks/latest" |
  | |
 kyve-t | CURL="https://api.explorer.kyve.network/bank/total/tkyve" |
 stafi-t | CURL="https://test-rest-rpc1.stafihub.io/bank/total/ufis" |
