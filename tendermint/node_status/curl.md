@@ -22,6 +22,7 @@ genesisl1-m | CURL="https://api.genesisl1.org/bank/total" |
 persistence-m | CURL="https://rest.core.persistence.one/blocks/latest" |
 stride-m | CURL="https://stride.api.explorers.guru/api/blocks/latest" |
 teritori-m | CURL="https://teritori.api.explorers.guru/api/blocks/latest" |
+lambda-m | CURL="https://api.lambda.nodestake.top/bank/total" |
  | |
 kyve-t | CURL="https://api.explorer.kyve.network/bank/total/tkyve" |
 stafi-t | CURL="https://test-rest-rpc1.stafihub.io/bank/total/ufis" |
