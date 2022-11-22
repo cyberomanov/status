@@ -43,13 +43,15 @@ clan-t | CURL="https://api.clan.testnet.run/bank/total/uclan" |
 kujira-t | CURL="https://kujira-testnet.synergynodes.com/bank/total/ukuji" |
 crowd-t | CURL="https://crowd-api.theamsolutions.info/bank/total" |
 haqq-t | CURL="https://haqq.api.explorers.guru/api/blocks/latest" |
-teritori-t | CURL="https://teritori.api.explorers.guru/api/blocks/latest" |
+teritori-t | CURL="https://teritori.api.t.stavr.tech/cosmos/base/tendermint/v1beta1/blocks/latest" |
 terp-network-t | CURL="http://terp.api.t.stavr.tech:2017/bank/total" |
 ollo-t | CURL="http://ollo.api.t.stavr.tech:1014/cosmos/bank/v1beta1/supply/utollo" |
 empower-t | CURL="http://empw.api.t.stavr.tech:318/cosmos/base/tendermint/v1beta1/blocks/latest" |
 androma-t | CURL="https://androma-testnet-api.polkachu.com/cosmos/base/tendermint/v1beta1/blocks/latest" |
 uptick-t | CURL="https://uptick.api.t.stavr.tech/cosmos/base/tendermint/v1beta1/blocks/latest" |
 omniflix-t | CURL="https://api.flixtestnet.mcbnode.online/cosmos/base/tendermint/v1beta1/blocks/latest" |
+nibiru-t | CURL="https://t-nibiru.api.utsa.tech/cosmos/base/tendermint/v1beta1/blocks/latest" |
+gitopia-t |  CURL="https://t-gitopia.api.utsa.tech/cosmos/base/tendermint/v1beta1/blocks/latest" |
 
 If you want to add your custom CURL into script, you have to open the needed explorer, open `Inspect` with your mouse's right click, open `Network` tab and find a request with `v1/status`, `bank/total` or `blocks/latest` words in the request link. 
 
