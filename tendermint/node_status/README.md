@@ -16,24 +16,39 @@ Instruction:
 8. Run `bash cosmos.sh` to check your settings. Normal output:
 
 ```
-root@v1131623:~/status# bash cosmos.sh
- 
-/// 2022-07-09 11:42:37 ///
- 
-testnets  |  load
+┌-------------------------------------┐
+   2022-12-02 | 19:37:02 | i1 | load   
+└-------------------------------------┘
 
-cpu >>>>> 68%.
-ram >>>>> 47%.
-part >>>> 55%.
-load >>>> 14.03.
- 
-dws-t  |  cyberomanov
+cpu_used >>>>> 55%.
+ram_used >>>>> 19%.
+swap_used >>>> 19%.
+part_used >>>> 41%.
+nvme0n1 >>>>>> 100% spare, 43% used.
+server_load >> 24.02.
 
-exp/me >> 955540/955540.
-place >>> 88/200.
-stake >>> 34.98 dws.
+┌--------------------------┐
+   kyve-b  |  cyberomanov   
+└--------------------------┘
 
-root@v1131623:~/status# 
+node >>>>>>>>> connectable.
+exp/me >>>>>>> 1245736/1245736, gap: 0 blocks.
+chain >>>>>>>> alive, consensus: 0.00.
+block_time >>> 5.65 sec.
+validator >>>> exists.
+priv_key >>>>> right.
+status >>>>>>> active.
+place >>>>>>>> 52/100.
+token_price >> $n/a.
+apr >>>>>>>>>> 1293.45%.
+stake >>>>>>>> 12851.10 kyve.
+balance >>>>>> 5286.48 kyve.
+outstanding >> 12630.50 kyve.
+salary/mo >>>> 13851.90 kyve.
+missed >>>>>>> 0 blocks, 0 in a row.
+jailed >>>>>>> after 50 missed blocks.
+gov >>>>>>>>>> no unvoted proposals.
+upgrade >>>>>> no upgrade scheduled.
 ```
 
 9. Add some rules with `chmod u+x $HOME/status/cosmos.sh`.
