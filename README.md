@@ -1,6 +1,9 @@
 # status
 Descriptions are unique for every ecosystem (folder).
 
+
+-----------
+
 Donations, just in case:
 
 `SOL >>> 8UM1sHHShTgNa4vjQV6v1SEvi3BwDn4wG1pRRZnbFvRY`
