@@ -390,7 +390,7 @@ function Main() {
     echo -e "${MONIKER}\n"
 
     # check delinquent status
-    VALIDATOR_INFO_TOTAL=$(${BIN} -ul validators --output json-compact 2>&1)
+    VALIDATOR_INFO_TOTAL=$(${BIN} -u${CLUSTER} validators --output json-compact 2>&1)
     if [[ ${VALIDATOR_INFO_TOTAL} == *"error"* ]]; then
         TEXT="rpc request error: 503. check log."
         SEND=1
