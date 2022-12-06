@@ -12,7 +12,7 @@ Donations, just in case:
 
 `DOT >>> 15rCbyqHZnS6oWon2ntp1JGPBZsTxt66EThMDMxdPxs67Y2K`
 
-`ATOM >> cosmos1kc5305r9ngjvl99nm9vztlwlfhvlys5facz96e`
+`ATOM >> cosmos1h359yz2xyy323ezd4dryxldkv98f2sc0cccjjw`
 
 `TRC >>> TMZczdd7LZJSCp83WrLn245t6rSeEYeBTh`
 
