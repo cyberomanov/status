@@ -16,13 +16,17 @@ Instruction:
 ```
 root@ubuntu:~/status# bash nym.sh
  
-/// 2022-05-21 20:07:32 ///
+/// 2022-12-12 10:57:38 ///
  
 nym-m  |  cyberomanov
 
-stake >>>>> 127314.73 | $50473.92.
-salary/m >>    367.20 | $145.58.
-unpaid >>>>     77.26 | $30.63.
+hour/day >> 100%/99%.
+version >>> actual.
+status >>>> active.
+stake >>>>> 192431.19 | $31795.41.
+salary/m >>    345.60 | $57.10.
+unpaid >>>>    295.49 | $48.82.
+balance >>>    215.69 | $35.64.
 
 root@ubuntu:~/status# 
 ```
