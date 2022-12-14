@@ -14,21 +14,22 @@ Instruction:
 7. Run `bash nym.sh` to check your settings. Normal output:
 
 ```
-root@ubuntu:~/status# bash nym.sh
+root@nym:~/status# bash nym.sh
  
-/// 2022-12-12 10:57:38 ///
+/// 2022-12-14 19:03:39 ///
  
 nym-m  |  cyberomanov
 
-hour/day >> 100%/99%.
-version >>> actual.
+hour/day >> 100%/97%.
+_version >> 1.1.2.
+_outdated > true.
 status >>>> active.
-stake >>>>> 192431.19 | $31795.41.
-salary/m >>    345.60 | $57.10.
-unpaid >>>>    295.49 | $48.82.
-balance >>>    215.69 | $35.64.
+stake >>>>> 188034.22 | $31407.73.
+salary/m >>    331.20 | $55.32.
+unpaid >>>>    322.37 | $53.85.
+balance >>>    215.69 | $36.03.
 
-root@ubuntu:~/status# 
+root@nym:~/status# 
 ```
 
 8. Create `slash.sh` with `nano $HOME/status/slash.sh`, if you don't have one yet. This bash script will divide group of messages.
