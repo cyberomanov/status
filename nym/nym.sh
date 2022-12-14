@@ -44,8 +44,8 @@ function __NodeStatus() {
         OUTDATED=$(echo ${TOTAL_INFO} | jq ".outdated" | tr -d '"')
         if [[ "${OUTDATED}" == "true" ]]; then
             SEND=1
-            VERSION=$(echo ${TOTAL_INFO} | jq ".mixnode.mix_node.version" | tr -d '"')
-            TEXT="_version >> ${VERSION}.\n_outdated > ${OUTDATED}.\n"
+            VERSION=$(echo ${TOTAL_INFO} | jq ".mixnode.version" | tr -d '"')
+            TEXT="_version >> ${VERSION}.\n_outdated > ${OUTDATED}."
             __Send
         else
             echo "version >>> actual."
