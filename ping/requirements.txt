@@ -49,7 +49,6 @@ netaddr==0.8.0
 numpy==1.23.4
 openpyxl==3.0.10
 packaging==21.3
-pandas==1.5.1
 parsimonious==0.8.1
 protobuf==3.19.5
 pycparser==2.21
