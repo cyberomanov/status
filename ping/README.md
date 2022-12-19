@@ -65,6 +65,6 @@ python3 ping.py
 >>> 16:36:56 | WARNING | [edgevana] with [12.xx.xx.114] is offline.
 ```
 
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/41644451/208438319-6ba739d2-56d7-4a9f-b3b1-2a5bf18cbe8d.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/41644451/208439649-4c16c17a-8e5f-47eb-914b-71f539623ed4.png">
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/41644451/208438701-b5551cbf-6a8c-42f7-9218-326417ad4eed.png">
 
