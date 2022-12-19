@@ -1,7 +1,8 @@
 # status
-Descriptions are unique for every ecosystem (folder).
 
-ping repository: [https://github.com/cyberomanov/status-ping](https://github.com/cyberomanov/status-ping)
+## ping 
+
+notifies you about offline servers via telegram - [https://github.com/cyberomanov/status-ping](https://github.com/cyberomanov/status-ping)
 
 
 -----------
