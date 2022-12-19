@@ -64,7 +64,7 @@ python3 ping.py
 >>> 16:36:06 | INFO | [mevspace] with [89.xx.xx.146] is online.
 >>> 16:36:56 | WARNING | [edgevana] with [12.xx.xx.114] is offline.
 ```
-
+<p align="center">
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/41644451/208439649-4c16c17a-8e5f-47eb-914b-71f539623ed4.png">
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/41644451/208438701-b5551cbf-6a8c-42f7-9218-326417ad4eed.png">
-
+</p>
