@@ -1,6 +1,8 @@
 # status
 Descriptions are unique for every ecosystem (folder).
 
+ping repository: [https://github.com/cyberomanov/status-ping](https://github.com/cyberomanov/status-ping)
+
 
 -----------
 
