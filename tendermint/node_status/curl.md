@@ -24,7 +24,7 @@ stride-m | CURL="https://stride.api.explorers.guru/api/blocks/latest" |
 teritori-m | CURL="https://teritori.api.explorers.guru/api/blocks/latest" |
 lambda-m | CURL="https://api.lambda.nodestake.top/bank/total" |
 assetmantle-m | CURL="https://assetmantle.api.explorers.guru/api/blocks/latest" |
-quicksilver-m | CURL="https://quick.api.m.stavr.tech/cosmos/base/tendermint/v1beta1/blocks/latest" |
+quicksilver-m | CURL="https://pylons.api.explorers.guru/api/v1/blocks/latest" |
  | |
 kyve-t | CURL="https://api.explorer.kyve.network/bank/total/tkyve" |
 kyve-b | CURL="https://api.beta.kyve.network/cosmos/base/tendermint/v1beta1/blocks/latest" |
