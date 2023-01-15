@@ -2,9 +2,12 @@
 
 ## ping 
 
-notifies you about offline servers via telegram - [https://github.com/cyberomanov/status-ping](https://github.com/cyberomanov/status-ping)
+notifies you about offline servers via telegram - [https://github.com/cyberomanov/status-ping](https://github.com/cyberomanov/status-ping).
+
+## nym
+notifies you about nym mixnode status via telegram - [https://github.com/cyberomanov/status-nym](https://github.com/cyberomanov/status-nym).
 
 
 -----------
 
-donations, just in case: [https://cyberomanov.tech/WTF_donate](https://cyberomanov.tech/WTF_donate)
+[donations are welcome](https://cyberomanov.tech/WTF_donate), if you find this tools helpful.
