@@ -1,5 +1,0 @@
-# status
-2,12,22,32,42,52 * * * * bash $HOME/status/nym.sh >> $HOME/status/nym.log 2>&1
-
-# slash
-0 * * * * $HOME/status/slash.sh
