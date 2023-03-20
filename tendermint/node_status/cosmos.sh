@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# inflation is disabled on chains with enabled inflation
-# self-stake
-# add --home everywhere
-
 function __SystemLoad() {
 
     # print separator
@@ -159,7 +155,7 @@ function __BlockGap() {
     BLOCK_GAP_STATUS="OK"
 
     # get the last explorer's block
-    if [[ ${CURL} == *"v1/status"* ]]; then
+    if [[ ${CURL} == *"v1/status"* ]] || [[ ${CURL} == *"mintscan"* ]]; then
         LATEST_CHAIN_BLOCK=$(curl -sk ${CURL} | jq -r ".block_height")
         if [[ ${LATEST_CHAIN_BLOCK} == "null" ]]; then
             LATEST_CHAIN_BLOCK=$(curl -sk ${CURL} | jq -r ".data.block_height")
@@ -315,17 +311,13 @@ function __TokenPrice() {
 
     TOKEN_PRICE_STATUS="NOT_OK"
 
-    if [[ ${MAINNET} == "true" ]]; then
-        # trying to get token price on osmosis, cosmostation and coingecko
-        TOKEN_PRICE=$(curl -sk "https://api-osmosis.imperator.co/tokens/v2/${TOKEN}" | jq ".[].price" 2>&1)
+    # trying to get token price on osmosis, cosmostation and coingecko
+    TOKEN_PRICE=$(curl -sk "https://api-osmosis.imperator.co/tokens/v2/${TOKEN}" | jq ".[].price" 2>&1)
+    if [[ ${TOKEN_PRICE} == *"null"* || ${TOKEN_PRICE} == *"error"* ]]; then
+        TOKEN_PRICE=$(curl -sk "https://api-utility.cosmostation.io/v1/market/price?id=u${TOKEN}" | jq ".[].prices[].current_price" 2>&1)
         if [[ ${TOKEN_PRICE} == *"null"* || ${TOKEN_PRICE} == *"error"* ]]; then
-            TOKEN_PRICE=$(curl -sk "https://api-utility.cosmostation.io/v1/market/price?id=u${TOKEN}" | jq ".[].prices[].current_price" 2>&1)
-            if [[ ${TOKEN_PRICE} == *"null"* || ${TOKEN_PRICE} == *"error"* ]]; then
-                TOKEN_PRICE="n/a"
-            fi
+            TOKEN_PRICE="n/a"
         fi
-    else
-        TOKEN_PRICE="n/a"
     fi
 
     if [[ ${TOKEN_PRICE} != "n/a" ]]; then
@@ -679,6 +671,9 @@ function __UnvotedProposals() {
     if [[ ${PROPOSALS} != *"no proposals found"* ]]; then
         # get array of active proposals
         ACTIVE_PROPOSALS_STRING=$(echo ${PROPOSALS} | jq '.proposals[] | select(.status=="PROPOSAL_STATUS_VOTING_PERIOD")' | jq -r '.proposal_id')
+        if [[ ${ACTIVE_PROPOSALS_STRING} == "null" ]]; then
+            ACTIVE_PROPOSALS_STRING=$(echo ${PROPOSALS} | jq '.proposals[] | select(.status=="PROPOSAL_STATUS_VOTING_PERIOD")' | jq -r '.id')
+        fi
         ACTIVE_PROPOSALS_ARRAY=($(echo "${ACTIVE_PROPOSALS_STRING}" | tr ' ' '\n'))
 
         # init array of unvoted proposals
@@ -947,6 +942,8 @@ function __OneMessageToTelegram() {
     --data '{"chat_id":"'"${CHAT_ID}"'", "text":"'"$(echo -e "${MESSAGE}")"'", "parse_mode": "html"}' "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
     > /dev/null 2>&1
 }
+
+
 
 function __TelegramReport() {
 
