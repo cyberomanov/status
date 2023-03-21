@@ -671,7 +671,7 @@ function __UnvotedProposals() {
     if [[ ${PROPOSALS} != *"no proposals found"* ]]; then
         # get array of active proposals
         ACTIVE_PROPOSALS_STRING=$(echo ${PROPOSALS} | jq '.proposals[] | select(.status=="PROPOSAL_STATUS_VOTING_PERIOD")' | jq -r '.proposal_id')
-        if [[ ${ACTIVE_PROPOSALS_STRING} == "null" ]]; then
+        if [[ ${ACTIVE_PROPOSALS_STRING} == *"null"* ]]; then
             ACTIVE_PROPOSALS_STRING=$(echo ${PROPOSALS} | jq '.proposals[] | select(.status=="PROPOSAL_STATUS_VOTING_PERIOD")' | jq -r '.id')
         fi
         ACTIVE_PROPOSALS_ARRAY=($(echo "${ACTIVE_PROPOSALS_STRING}" | tr ' ' '\n'))
