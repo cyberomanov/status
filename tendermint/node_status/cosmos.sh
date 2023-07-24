@@ -312,12 +312,9 @@ function __TokenPrice() {
     TOKEN_PRICE_STATUS="NOT_OK"
 
     # trying to get token price on osmosis, cosmostation and coingecko
-    TOKEN_PRICE=$(curl -sk "https://api-osmosis.imperator.co/tokens/v2/${TOKEN}" | jq ".[].price" 2>&1)
-    if [[ ${TOKEN_PRICE} == *"null"* || ${TOKEN_PRICE} == *"error"* ]]; then
-        TOKEN_PRICE=$(curl -sk "https://api-utility.cosmostation.io/v1/market/price?id=u${TOKEN}" | jq ".[].prices[].current_price" 2>&1)
-        if [[ ${TOKEN_PRICE} == *"null"* || ${TOKEN_PRICE} == *"error"* ]]; then
-            TOKEN_PRICE="n/a"
-        fi
+    TOKEN_PRICE=$(curl -sk --connect-timeout 5 "https://api-osmosis.imperator.co/tokens/v2/${TOKEN}" | jq ".[].price" 2>&1)
+    if [[ ${TOKEN_PRICE} == *"null"* || ${TOKEN_PRICE} == *"error"* || ${TOKEN_PRICE} == *"check again"* ]]; then
+        TOKEN_PRICE="n/a"
     fi
 
     if [[ ${TOKEN_PRICE} != "n/a" ]]; then
