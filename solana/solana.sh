@@ -15,7 +15,7 @@ function __Epoch() {
     STRANGE=0
 
     # do some check
-    CHECK=$(${BIN} epoch-info -ul 2>&1)
+    CHECK=$(${BIN} epoch-info --url ${API} 2>&1)
     if [[ ${CHECK} == *"error"* ]]; then
         TEXT="${CLUSTER_NAME} >>>> ???\n"
         __Send
@@ -23,7 +23,7 @@ function __Epoch() {
         __Send
     else
         # get some info about epoch
-        ${BIN} epoch-info -ul > ~/temp.txt
+        ${BIN} epoch-info --url ${API} > ~/temp.txt
 
         # get epoch number
         EPOCH_NUMBER=$(cat ~/temp.txt | grep "Epoch:" | awk '{print $2}')
@@ -37,7 +37,7 @@ function __Epoch() {
         __Send
 
         # get average cluster skiprate
-        AVG_CLUSTER_SKIP=$(printf "%.2f" $(${BIN} -ul validators --output json-compact | jq .'averageStakeWeightedSkipRate'))"%"
+        AVG_CLUSTER_SKIP=$(printf "%.2f" $(${BIN} --url ${API} validators --output json-compact | jq .'averageStakeWeightedSkipRate'))"%"
         TEXT="skiprate >>> ${AVG_CLUSTER_SKIP}.\n"
         __Send
 
@@ -85,7 +85,13 @@ function __DelinquentStatus() {
 
         # do several checks to prevent random alarm
         for i in {1..3}; do
-            VALIDATOR_INFO_TOTAL=$(${BIN} -u validators --output json-compact)
+            if [[ ${CLUSTER} == 't' ]]; then
+                VALIDATOR_INFO_TOTAL=$(${BIN} -ut validators --output json-compact 2>&1)
+            elif [[ ${API} != '' ]]; then
+                VALIDATOR_INFO_TOTAL=$(${BIN} --url ${API} validators --output json-compact 2>&1)
+            else
+                VALIDATOR_INFO_TOTAL=$(${BIN} -um validators --output json-compact 2>&1)
+            fi
             VALIDATOR_INFO=$(echo ${VALIDATOR_INFO_TOTAL} | jq '.validators[] | select(.identityPubkey == "'"${IDENTITY_KEY}"'")')
             DELINQUENT_STATUS=$(echo ${VALIDATOR_INFO} | jq  '.delinquent')
 
@@ -188,8 +194,12 @@ function __NodeStatus() {
     # read the config
     . $HOME/status/solana.conf
 
+    if [[ ${API} == '' ]]; then
+        API="localhost"
+    fi
+
     # get some info about our validator
-    # VALIDATOR_INFO_TOTAL=$(${BIN} -ul validators --output json-compact)
+    # VALIDATOR_INFO_TOTAL=$(${BIN} --url ${API} validators --output json-compact)
     VALIDATOR_INFO=$(echo ${VALIDATOR_INFO_TOTAL} | jq '.validators[] | select(.identityPubkey == "'"${IDENTITY_KEY}"'")')
 
     # get bin version from chain
@@ -198,7 +208,7 @@ function __NodeStatus() {
     # __Send
 
     # get some info about slots and skiprate
-    TOTAL_PASSED_SLOTS=$(${BIN} block-production -ul | grep "$IDENTITY_KEY")
+    TOTAL_PASSED_SLOTS=$(${BIN} block-production --url ${API} | grep "$IDENTITY_KEY")
     EXECUTED_SLOTS=$(echo ${TOTAL_PASSED_SLOTS} | awk '{print $3}')
     SKIPPED_SLOTS=$(echo ${TOTAL_PASSED_SLOTS} | awk '{print $4}')
 
@@ -254,7 +264,7 @@ function __NodeStatus() {
     echo
 
     # get some info about credits
-    CREDITS_PLACE=$(${BIN} validators -ul --sort=credits -r -n | grep ${IDENTITY_KEY} | awk '{print $1}' | grep -oE "[0-9]*")
+    CREDITS_PLACE=$(${BIN} validators --url ${API} --sort=credits -r -n | grep ${IDENTITY_KEY} | awk '{print $1}' | grep -oE "[0-9]*")
     CREDITS_EARNED=$(echo ${VALIDATOR_INFO_TOTAL} | jq '.validators[] | select(.identityPubkey == "'"${IDENTITY_KEY}"'" ) |  .epochCredits')
 
     if [[ ${CREDITS_EARNED} != "" ]]; then
@@ -296,9 +306,13 @@ function __NodeStatus() {
 
     # get some info about stakes
     if [[ ${CLUSTER} == "t" ]]; then
-        STAKES_INFO=$(${BIN} stakes ${VOTE_KEY} -ul --output json-compact)
+        STAKES_INFO=$(${BIN} stakes ${VOTE_KEY} -ut --output json-compact)
     elif [[ ${CLUSTER} == "m" ]]; then
-        STAKES_INFO=$(${BIN} stakes ${VOTE_KEY} --url ${API} --output json-compact 2>&1)
+        if [[ ${API} != "" ]]; then
+            STAKES_INFO=$(${BIN} stakes ${VOTE_KEY} --url ${API} --output json-compact 2>&1)
+        else
+            STAKES_INFO="[]"
+        fi
         if [[ ${STAKES_INFO} == "[]" || ${STAKES_INFO} == *"Too Many Requests"* || ${STAKES_INFO} == *"timed out"* ]]; then
             STAKES_INFO=$(${BIN} stakes ${VOTE_KEY} --url "https://solana-mainnet-rpc.allthatnode.com" --output json-compact 2>&1)
             if [[ ${STAKES_INFO} == "[]" || ${STAKES_INFO} == *"Too Many Requests"* || ${STAKES_INFO} == *"timed out"* ]]; then
@@ -324,8 +338,8 @@ function __NodeStatus() {
     __Send
 
     # get info about balance
-    IDENTITY_BALANCE=$(printf "%.2f" $(${BIN} balance ${IDENTITY_KEY} -ul | awk '{print $1}'))
-    VOTE_BALANCE=$(printf "%.2f" $(${BIN} balance ${VOTE_KEY} -ul | awk '{print $1}'))
+    IDENTITY_BALANCE=$(printf "%.2f" $(${BIN} balance ${IDENTITY_KEY} --url ${API} | awk '{print $1}'))
+    VOTE_BALANCE=$(printf "%.2f" $(${BIN} balance ${VOTE_KEY} --url ${API} | awk '{print $1}'))
 
     if [[ $(echo "${IDENTITY_BALANCE} < ${IDENTITY_BALANCE_ALARM}" | bc) -eq 1 ]]; then
         SEND=1
@@ -367,6 +381,10 @@ function Main() {
     cd $HOME/status/
     source ./solana.conf
 
+    if [[ ${API} == '' ]]; then
+        API="localhost"
+    fi
+
     export TZ=${TIMEZONE}
 
     # get 'cluster_name'
@@ -390,23 +408,26 @@ function Main() {
     echo -e "${MONIKER}\n"
 
     # check delinquent status
-    VALIDATOR_INFO_TOTAL=$(${BIN} -u${CLUSTER} validators --output json-compact 2>&1)
+    if [[ ${CLUSTER} == 't' ]]; then
+        VALIDATOR_INFO_TOTAL=$(${BIN} -ut validators --output json-compact 2>&1)
+    elif [[ ${API} != '' ]]; then
+        VALIDATOR_INFO_TOTAL=$(${BIN} --url ${API} validators --output json-compact 2>&1)
+    else
+        VALIDATOR_INFO_TOTAL=$(${BIN} -um validators --output json-compact 2>&1)
+    fi
+
     if [[ ${VALIDATOR_INFO_TOTAL} == *"error"* ]]; then
         TEXT="rpc request error: 503. check log."
         SEND=1
         __Send
     else
-
         __ChainVitalityCheck
-
         if [[ ${CHAIN_STATUS} == "OK" ]]; then
-
             __DelinquentStatus
-
             # if delinquent is 'false'
             if [[ ${DELINQUENT_STATUS} == "false" ]]; then
 
-                VALIDATOR_INFO_TOTAL=$(${BIN} -ul validators --output json-compact)
+                VALIDATOR_INFO_TOTAL=$(${BIN} --url ${API} validators --output json-compact)
                 # get bin version from chain
                 BIN_VERSION=$(echo ${VALIDATOR_INFO} | jq '.version' | tr -d '"')
                 if [[ ${BIN_VERSION} != "" ]]; then
