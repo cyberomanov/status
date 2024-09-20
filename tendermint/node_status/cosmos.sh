@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# inflation is disabled on chains with enabled inflation
+# self-stake
+# add --home everywhere
+# 0 */1 * * * pkill -f '.+status/cosmos.sh.+' >> /root/pkill.log; pkill -f '.+auto/.+' >> /root/pkill.log
+
 function __SystemLoad() {
 
     # print separator
@@ -173,7 +178,9 @@ function __BlockGap() {
 
     # get the latest local node height
     LATEST_NODE_BLOCK=$(${COSMOS} status 2>&1 --node ${NODE} --home ${NODE_HOME} | jq -r '.SyncInfo'.'latest_block_height')
-
+    if [[ ${LATEST_NODE_BLOCK} == 'null' ]]; then
+        LATEST_NODE_BLOCK=$(${COSMOS} status 2>&1 --node ${NODE} --home ${NODE_HOME} | jq -r '.sync_info.latest_block_height')
+    fi
     # if 'CURL' was not set > no compare with explorer height
     if [[ ${CURL} != "" ]] && [[ ${LATEST_CHAIN_BLOCK} != "" ]] && [[ ${LATEST_CHAIN_BLOCK} != "0" ]] && [[ ${LATEST_CHAIN_BLOCK} != "null" ]]; then
         BLOCK_GAP=$((${LATEST_CHAIN_BLOCK}-${LATEST_NODE_BLOCK}))
@@ -238,7 +245,7 @@ function __BlockExecutionTime() {
     if [[ $(echo "${FIRST_AVAILABLE_BLOCK} > ${START_BLOCK_HEIGHT}" | bc) -eq 1 ]]; then START_BLOCK_HEIGHT=${FIRST_AVAILABLE_BLOCK}; fi 
 
     # get the start block time for calculating
-    START_BLOCK_TIME=$(${COSMOS} q block ${START_BLOCK_HEIGHT} --node ${NODE} | jq -r ".block.header.time" | grep -oE "[0-9]*:[0-9]*:[0-9]*")
+    START_BLOCK_TIME=$(${COSMOS} q block ${START_BLOCK_HEIGHT} --node ${NODE} | jq -r ".block.header.time" | grep -oE "[0-9]*:[0-9]*:[0-9]*") || START_BLOCK_TIME=$(${COSMOS} q block --type="height" ${START_BLOCK_HEIGHT} --node ${NODE} | tail -n 2 | grep -oE "[0-9]*:[0-9]*:[0-9]*")
     IFS=':' read -ra HMS <<< "${START_BLOCK_TIME}"
     START_BLOCK_TIME_IN_SEC=$(echo ${HMS[0]}*3600+${HMS[1]}*60+${HMS[2]} | bc -l)
 
@@ -352,12 +359,12 @@ function __DelegatorBalance() {
 
 function __ValidatorStake() {
 
-    LOCAL_EXPLORER=$(${COSMOS} q staking validators --node ${NODE} --output json --home ${NODE_HOME} --limit=999999999)
-    VALIDATOR_STRING=$(echo ${LOCAL_EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep -F ${MONIKER})
+    LOCAL_EXPLORER=$(${COSMOS} q staking validators --node ${NODE} --output json --home ${NODE_HOME} --limit=99999999) || LOCAL_EXPLORER=$(${COSMOS} q staking validators --node ${NODE} --output json --home ${NODE_HOME} --page-limit=99999999)
+    VALIDATOR_STRING=$(echo ${LOCAL_EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED" or .status==3)' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep -F ${MONIKER})
     if [[ ${VALIDATOR_STRING} == "" ]]; then
-        VALIDATOR_STRING=$(echo ${LOCAL_EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_UNBONDING")' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep -F ${MONIKER})
+        VALIDATOR_STRING=$(echo ${LOCAL_EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_UNBONDING" or .status==3)' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep -F ${MONIKER})
         if [[ ${VALIDATOR_STRING} == "" ]]; then
-            VALIDATOR_STRING=$(echo ${LOCAL_EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_UNBONDED")' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep -F ${MONIKER})
+            VALIDATOR_STRING=$(echo ${LOCAL_EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_UNBONDED" or .status==3)' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep -F ${MONIKER})
         fi
     fi
     
@@ -381,6 +388,9 @@ function __ValidatorStake() {
 function __PrivateValidatorKey() {
 
     CONSENSUS_PUBKEY=$(${COSMOS} q staking validator ${VALIDATOR_ADDRESS} -oj --node ${NODE} --home ${NODE_HOME} | jq -r ".consensus_pubkey.key")
+    if [[ ${CONSENSUS_PUBKEY} == 'null' ]]; then
+        CONSENSUS_PUBKEY=$(${COSMOS} q staking validator ${VALIDATOR_ADDRESS} -oj --node ${NODE} --home ${NODE_HOME} | jq -r '.validator.consensus_pubkey.value')
+    fi
     CURRENT_PUBKEY=$(curl -s localhost:${PORT}/status | jq -r ".result.validator_info.pub_key.value")
 
     if [[ ${CONSENSUS_PUBKEY} == ${CURRENT_PUBKEY} ]]; then
@@ -397,8 +407,11 @@ function __BondingStatus() {
 
     VALIDATOR_INFO=$(${COSMOS} query staking validator ${VALIDATOR_ADDRESS} --node ${NODE} --output json --home ${NODE_HOME})
     BONDING_STATUS=$(echo ${VALIDATOR_INFO} | jq -r '.status')
+    if [[ ${BONDING_STATUS} == 'null' ]]; then
+        BONDING_STATUS=$(echo ${VALIDATOR_INFO} | jq -r '.validator.status')
+    fi
 
-    if [[ "${BONDING_STATUS}" != "BOND_STATUS_BONDED" ]]; then
+    if [[ "${BONDING_STATUS}" != "BOND_STATUS_BONDED" ]] && [[ "${BONDING_STATUS}" != "3" ]]; then
         BONDING_STATUS="NOT_OK"
         JAILED_STATUS=$(echo ${VALIDATOR_INFO} | jq -r .'jailed')
 
@@ -428,11 +441,14 @@ function __BondingStatus() {
 
 function __ValidatorPlace() {
 
-    LOCAL_EXPLORER=$(${COSMOS} q staking validators --node ${NODE} --output json --home ${NODE_HOME} --limit=999999999)
-    VALIDATORS_COUNT=$(echo ${LOCAL_EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '.tokens' | sort -gr | wc -l)
-    VALIDATOR_STRING=$(echo ${LOCAL_EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep -F ${MONIKER})
+    LOCAL_EXPLORER=$(${COSMOS} q staking validators --node ${NODE} --output json --home ${NODE_HOME} --limit=99999999) || LOCAL_EXPLORER=$(${COSMOS} q staking validators --node ${NODE} --output json --home ${NODE_HOME} --page-limit=99999999)
+    VALIDATORS_COUNT=$(echo ${LOCAL_EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED" or .status==3)' | jq -r '.tokens' | sort -gr | wc -l)
+    VALIDATOR_STRING=$(echo ${LOCAL_EXPLORER} | jq '.validators[] | select(.status=="BOND_STATUS_BONDED" or .status==3)' | jq -r '.tokens + " " + .description.moniker' | sort -gr | nl | grep -F ${MONIKER})
     VALIDATOR_POSITION=$(echo ${VALIDATOR_STRING} | awk '{print $1}')
-    ACTIVE_VALIDATOR_SET=$(${COSMOS} q staking params --node ${NODE} --output json --home ${NODE_HOME} | jq ."max_validators")
+    ACTIVE_VALIDATOR_SET=$(${COSMOS} q staking params --node ${NODE} --output json --home ${NODE_HOME} | jq '.max_validators')
+    if [[ ${ACTIVE_VALIDATOR_SET} == 'null' ]]; then
+        ACTIVE_VALIDATOR_SET=$(${COSMOS} q staking params --node ${NODE} --output json --home ${NODE_HOME} | jq '.params.max_validators')
+    fi
 
     PLACE_STATUS="OK"
     PLACE_TEXT="place > ${VALIDATOR_POSITION}/${ACTIVE_VALIDATOR_SET}.\n"
@@ -449,12 +465,21 @@ function __ValidatorPlace() {
 
 function __ValidatorOutstandingRewards() {
 
-
     REWARDS_TOTAL_TOKEN_HUMAN=0
     if [[ $(${COSMOS} query distribution commission ${VALIDATOR_ADDRESS} --chain-id ${CHAIN} --node ${NODE} --output json 2>&1) != *"unknown command"* ]]; then
         COMMISSION_TOKEN=$(${COSMOS} query distribution commission ${VALIDATOR_ADDRESS} --chain-id ${CHAIN} --node ${NODE} --output json | jq '.commission[] | select(.denom == "'"${UTOKEN}"'") .amount' | bc)
-        if [[ ${COMMISSION_TOKEN} == "" ]]; then COMMISSION_TOKEN=0; fi
-        REWARDS_TOKEN=$(${COSMOS} query distribution rewards ${DELEGATOR_ADDRESS} --chain-id ${CHAIN} --node ${NODE} --output json | jq '.total[] | select(.denom == "'"${UTOKEN}"'") .amount' | bc)
+        if [[ ${COMMISSION_TOKEN} == "" ]]; then
+            COMMISSION_TOKEN=$(${COSMOS} query distribution commission ${VALIDATOR_ADDRESS} --chain-id ${CHAIN} --node ${NODE} --output json | jq '.commission.commission[] | select(.denom == "'"${UTOKEN}"'") | .amount' | bc)
+            COMMISSION_TOKEN=$(echo "scale=4; ${COMMISSION_TOKEN} / 10^18" | bc)
+            if [[ ${COMMISSION_TOKEN} == "" ]]; then COMMISSION_TOKEN=0; fi
+            REWARDS_TOKEN=$(${COSMOS} query distribution rewards ${DELEGATOR_ADDRESS} --chain-id ${CHAIN} --node ${NODE} --output json | jq '.total[] | select(.denom == "'"${UTOKEN}"'") .amount' | bc)
+            REWARDS_TOKEN=$(echo "scale=4; ${REWARDS_TOKEN} / 10^18" | bc)
+        else
+            if [[ ${COMMISSION_TOKEN} == "" ]]; then COMMISSION_TOKEN=0; fi
+            REWARDS_TOKEN=$(${COSMOS} query distribution rewards ${DELEGATOR_ADDRESS} --chain-id ${CHAIN} --node ${NODE} --output json | jq '.total[] | select(.denom == "'"${UTOKEN}"'") .amount' | bc)
+
+        fi
+        
         if [[ ${REWARDS_TOKEN} == "" ]]; then REWARDS_TOKEN=0; fi
         REWARDS_TOTAL_TOKEN=$(echo "scale=2;(${COMMISSION_TOKEN}+${REWARDS_TOKEN})/1" | bc)
         if (( $(bc <<< "${REWARDS_TOTAL_TOKEN} < 1") )); then REWARDS_TOTAL_TOKEN="0${REWARDS_TOTAL_TOKEN}"; fi
@@ -484,6 +509,9 @@ function __ValidatorExpectedRewards() {
 
     # get inflation info
     INFLATION=$(${COSMOS} query mint inflation --node ${NODE} --home ${NODE_HOME} 2>&1)
+    if [[ ${INFLATION} == *"inflation"* ]]; then
+        INFLATION=$(echo ${INFLATION} | grep -oE "[0-9]+.[0-9]*")
+    fi
     if [[ ${INFLATION} == *"unknown"* || ${INFLATION} == *"error"* ]]; then
         EPOCH_MINT_PROVISION=$(${COSMOS} query inflation epoch-mint-provision --node ${NODE} --home ${NODE_HOME} 2>&1)
         if [[ ${EPOCH_MINT_PROVISION} != *"unknown"* && ${EPOCH_MINT_PROVISION} != *"error"* ]]; then
@@ -499,12 +527,24 @@ function __ValidatorExpectedRewards() {
         if [[ ${EPOCH} == "false" ]]; then
             MINT_PARAMS=$(${COSMOS} query mint params --output json --node ${NODE} --home ${NODE_HOME} 2>&1)
             ANNUAL_PROVISION=$(${COSMOS} query mint annual-provisions --node ${NODE} --home ${NODE_HOME} 2>&1)
+            if [[ ${ANNUAL_PROVISION} == *"annual_provisions"* ]]; then
+                ANNUAL_PROVISION=$(echo ${ANNUAL_PROVISION} | grep -oE "[0-9]+.[0-9]*")
+            fi
             BONDED_TOKENS=$(${COSMOS} query staking pool --output json --node ${NODE} --home ${NODE_HOME} | jq -r ".bonded_tokens")
+            if [[ ${BONDED_TOKENS} == 'null' ]]; then
+                BONDED_TOKENS=$(${COSMOS} query staking pool --output json --node ${NODE} --home ${NODE_HOME} | jq -r ".pool.bonded_tokens")
+            fi
             BLOCKS_PER_YEAR_IDEAL=$(echo ${MINT_PARAMS} | jq -r ".blocks_per_year")
+            if [[ ${BLOCKS_PER_YEAR_IDEAL} == 'null' ]]; then
+               BLOCKS_PER_YEAR_IDEAL=$(echo ${MINT_PARAMS} | jq -r ".params.blocks_per_year")
+            fi
             BLOCKS_PER_YEAR_REAL=$(echo "31536000 ${BLOCK_EXECUTION_TIME}"| awk '{print $1 / $2}')
             BLOCK_PROVISION_IDEAL=$(echo "${ANNUAL_PROVISION} ${BLOCKS_PER_YEAR_IDEAL}"| awk '{print $1 / $2}')
             BLOCK_PROVISION_REAL=$(echo "${BLOCK_PROVISION_IDEAL} ${BLOCKS_PER_YEAR_REAL}"| awk '{print $1 * $2}')
             COMMUNITY_TAX=$(${COSMOS} query distribution params --output json --node ${NODE} --home ${NODE_HOME} | jq -r ".community_tax")
+            if [[ ${COMMUNITY_TAX} == 'null' ]]; then
+                COMMUNITY_TAX=$(${COSMOS} query distribution params --output json --node ${NODE} --home ${NODE_HOME} | jq -r ".params.community_tax")
+            fi
             APR_IDEAL=$(echo "${ANNUAL_PROVISION} ${COMMUNITY_TAX} ${BONDED_TOKENS}" | awk '{print $1 * ((1 - $2 ) / $3)}')
             APR_REAL=$(echo "${APR_IDEAL} ${BLOCK_PROVISION_REAL} ${ANNUAL_PROVISION}" | awk '{print $1 * ($2 / $3)}')
         else
@@ -523,13 +563,23 @@ function __ValidatorExpectedRewards() {
         APR_TEXT="apr > ${APR_PERC}%.\n"
 
         TOTAL_STAKE=$(${COSMOS} query staking validator ${VALIDATOR_ADDRESS} --output json --node ${NODE} --home ${NODE_HOME} | jq -r ".tokens")
+        if [[ ${TOTAL_STAKE} == 'null' ]]; then
+            TOTAL_STAKE=$(${COSMOS} query staking validator ${VALIDATOR_ADDRESS} --output json --node ${NODE} --home ${NODE_HOME} | jq -r ".validator.tokens")
+        fi
         SELF_STAKE=$(${COSMOS} query staking delegation ${DELEGATOR_ADDRESS} ${VALIDATOR_ADDRESS} --output json --node ${NODE} --home ${NODE_HOME} | jq -r ".balance.amount")
+        if [[ ${SELF_STAKE} == 'null' ]]; then
+            SELF_STAKE=$(${COSMOS} query staking delegation ${DELEGATOR_ADDRESS} ${VALIDATOR_ADDRESS} --output json --node ${NODE} --home ${NODE_HOME} | jq -r ".delegation_response.balance.amount")
+        fi
         OTHER_STAKE=$(echo "${TOTAL_STAKE} ${SELF_STAKE}" | awk '{print $1 - $2}')
 
         ANNUAL_REWARD_FOR_SELF_STAKE=$(echo "${SELF_STAKE} ${APR}" | awk '{print $1 * $2}')
         MONTHLY_SELF_STAKE_REWARD=$(echo "${ANNUAL_REWARD_FOR_SELF_STAKE} 12" | awk '{print $1 / $2}')
 
         VALIDATOR_RATE=$(${COSMOS} query staking validator ${VALIDATOR_ADDRESS} --output json --node ${NODE} --home ${NODE_HOME} | jq -r ".commission.commission_rates.rate")
+        if [[ ${VALIDATOR_RATE} == 'null' ]]; then
+            VALIDATOR_RATE=$(${COSMOS} query staking validator ${VALIDATOR_ADDRESS} --output json --node ${NODE} --home ${NODE_HOME} | jq -r ".validator.commission.commission_rates.rate")
+            VALIDATOR_RATE=$(echo "scale=4; ${VALIDATOR_RATE} / 10^18" | bc)
+        fi
         OTHER_STAKE_LIKE_SELF=$(echo "${OTHER_STAKE} ${VALIDATOR_RATE}" | awk '{print $1 * $2}')
         ANNUAL_REWARD_FOR_OTHER_STAKE=$(echo "${OTHER_STAKE_LIKE_SELF} ${APR}" | awk '{print $1 * $2}')
         MONTHLY_OTHER_STAKE_REWARD=$(echo "${ANNUAL_REWARD_FOR_OTHER_STAKE} 12" | awk '{print $1 / $2}')
@@ -704,7 +754,7 @@ function __UnvotedProposals() {
 function __UpgradePlan() {
 
     UPGRADE_PLAN=$(${COSMOS} q upgrade plan --node ${NODE} --output json 2>&1)
-    if [[ ${UPGRADE_PLAN} != *"no upgrade scheduled"* ]]; then
+    if [[ ${UPGRADE_PLAN} != *"no upgrade scheduled"* ]] && [[ ${UPGRADE_PLAN} != "{}" ]]; then
         UPGRADE_STATUS="NOT_OK"
 
         UPGRADE_HEIGHT=$(echo ${UPGRADE_PLAN} | jq -r ".height")
