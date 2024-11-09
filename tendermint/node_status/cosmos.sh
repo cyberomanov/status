@@ -287,6 +287,12 @@ function __Humaniting() {
     DENOM_VALUE=${2}
     PRICE_VALUE=${3}
 
+    # Check if ORIGINAL_VALUE is less than 0, and return 0 if true
+    if (( $(echo "${ORIGINAL_VALUE} < 0" | bc -l) )); then
+        echo "0"
+        return
+    fi
+
     SCALE=2
     HUMAN_VALUE=0
 
@@ -317,9 +323,10 @@ function __Humaniting() {
 function __TokenPrice() {
 
     TOKEN_PRICE_STATUS="NOT_OK"
+    TOKEN_CAPS="${TOKEN^^}"
 
     # trying to get token price on osmosis, cosmostation and coingecko
-    TOKEN_PRICE=$(curl -sk --connect-timeout 5 "https://api-osmosis.imperator.co/tokens/v2/${TOKEN}" | jq ".[].price" 2>&1)
+    TOKEN_PRICE=$(curl -sk --connect-timeout 5 "https://min-api.cryptocompare.com/data/pricemulti?fsyms=${TOKEN_CAPS}&tsyms=USDT" | jq ".${TOKEN_CAPS}.USDT" 2>&1)
     if [[ ${TOKEN_PRICE} == *"null"* || ${TOKEN_PRICE} == *"error"* || ${TOKEN_PRICE} == *"check again"* ]]; then
         TOKEN_PRICE="n/a"
     fi
@@ -952,7 +959,7 @@ function __ValidatorMonitorPostend() {
 }
 
 function __ValidatorMonitor() {
-    __NodeStatus # get 'NODE_STATUS', 'NODE_STATUS_TEXT'
+    __NodeStatus # get 'NODE_STATUS', 'e'
     if [[ ${NODE_STATUS} == "OK" ]]; then __BlockGap; # get 'BLOCK_GAP_STATUS', 'BLOCK_GAP_TEXT'
         if [[ ${BLOCK_GAP_STATUS} == "OK" ]]; then __ChainVitality; # get 'CHAIN_VITALITY_STATUS', 'CHAIN_VITALITY_TEXT'
             if [[ ${CHAIN_VITALITY_STATUS} == "OK" ]]; then
