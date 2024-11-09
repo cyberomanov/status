@@ -959,7 +959,7 @@ function __ValidatorMonitorPostend() {
 }
 
 function __ValidatorMonitor() {
-    __NodeStatus # get 'NODE_STATUS', 'e'
+    __NodeStatus # get 'NODE_STATUS', 'NODE_STATUS_TEXT'
     if [[ ${NODE_STATUS} == "OK" ]]; then __BlockGap; # get 'BLOCK_GAP_STATUS', 'BLOCK_GAP_TEXT'
         if [[ ${BLOCK_GAP_STATUS} == "OK" ]]; then __ChainVitality; # get 'CHAIN_VITALITY_STATUS', 'CHAIN_VITALITY_TEXT'
             if [[ ${CHAIN_VITALITY_STATUS} == "OK" ]]; then
